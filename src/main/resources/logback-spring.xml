@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Configuracion personalizada de Logback para MerchStock
+    Curso Integrador I - UTP 2026 - Grupo 3
+-->
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- ⭐ IMPORTANTE: importa los converters %clr (colores) de Spring Boot -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Propiedades reutilizables -->
+    <property name="LOG_DIR" value="logs"/>
+    <property name="LOG_FILE" value="merchstock"/>
+
+    <!-- Patron para CONSOLA con colores (usa el %clr de Spring Boot) -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%-5level) %clr([%thread]){magenta} %clr(%logger{36}){cyan} - %msg%n"/>
+
+    <!-- Patron para ARCHIVO sin colores -->
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"/>
+
+    <!-- ============================================================
+         APPENDER 1: Consola con colores
+    ============================================================ -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ============================================================
+         APPENDER 2: Archivo rotativo diario
+         Genera: logs/merchstock.log (actual)
+                 logs/merchstock-2026-06-07.0.log (historico)
+    ============================================================ -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${LOG_FILE}.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/${LOG_FILE}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ============================================================
+         APPENDER 3: Archivo SOLO de errores (auditoria critica)
+    ============================================================ -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${LOG_FILE}-errors.log</file>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/${LOG_FILE}-errors-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ============================================================
+         NIVELES DE LOG POR PAQUETE
+    ============================================================ -->
+
+    <!-- Nuestro paquete: ver TODO (DEBUG incluido) -->
+    <logger name="com.merchstock.app" level="DEBUG"/>
+
+    <!-- Hibernate: SQL queries en DEBUG, lo demas en INFO -->
+    <logger name="org.hibernate" level="INFO"/>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+
+    <!-- Spring Security e infraestructura: INFO -->
+    <logger name="org.springframework.security" level="INFO"/>
+    <logger name="org.springframework" level="INFO"/>
+
+    <!-- Tomcat: solo problemas -->
+    <logger name="org.apache.catalina" level="WARN"/>
+    <logger name="org.apache.tomcat" level="WARN"/>
+
+    <!-- ============================================================
+         ROOT LOGGER (por defecto)
+    ============================================================ -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </root>
+
+</configuration>

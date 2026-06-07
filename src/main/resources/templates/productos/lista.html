@@ -23,11 +23,12 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link active text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
                 <li class="nav-item">
                     <a class="nav-link text-white" th:href="@{/productos/alertas}">
                         Alertas
                         <span th:if="${totalAlertas != null and totalAlertas > 0}"
-                              class="badge bg-danger" th:text="${totalAlertas}">0</span>
+                            class="badge bg-danger" th:text="${totalAlertas}">0</span>
                     </a>
                 </li>
             </ul>
