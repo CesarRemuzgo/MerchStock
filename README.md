@@ -61,3 +61,31 @@ Patrones aplicados:
 ## 📄 Licencia
 
 MIT License — ver archivo [LICENSE](LICENSE)
+
+## 🗄️ Configuracion de Base de Datos
+
+Los scripts SQL para crear la BD estan en la carpeta [`database/`](database/).
+
+**Pasos rapidos:**
+1. Asegurate de tener MySQL 8 corriendo en `localhost:3306`
+2. Abrir MySQL Workbench y conectar como `root`
+3. Ejecutar `database/01-schema.sql` (crea BD y 7 tablas)
+4. Ejecutar `database/02-seed-data.sql` (carga 4 usuarios, 8 categorias, 16 productos)
+5. Ver [`database/README.md`](database/README.md) para instrucciones detalladas
+
+## ⚙️ Configurar el proyecto localmente
+
+Cada miembro debe:
+
+1. Clonar el repo: `git clone https://github.com/CesarRemuzgo/MerchStock`
+2. Crear la BD ejecutando los scripts SQL (ver seccion anterior)
+3. Copiar `src/main/resources/application-example.properties`
+   y renombrarlo a `src/main/resources/application.properties`
+4. Editar el archivo nuevo: poner tu password de MySQL en
+   `spring.datasource.password=TU_PASSWORD`
+5. Abrir la carpeta en VS Code (las extensiones recomendadas se sugieren automaticamente)
+6. Click derecho en `MerchstockAppApplication.java` → Run Java
+7. Abrir `http://localhost:8080` en el navegador
+
+⚠️ **Importante:** NUNCA subas tu `application.properties` a Git
+(esta protegido por el `.gitignore`). Tu password de MySQL es personal.
