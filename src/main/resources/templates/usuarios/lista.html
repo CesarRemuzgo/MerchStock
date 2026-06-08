@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Productos - MerchStock</title>
+    <title>Usuarios - MerchStock</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -11,8 +11,10 @@
         .bg-navy { background-color: var(--navy) !important; }
         .navbar-brand { font-weight: 700; color: white !important; }
         .table thead { background-color: var(--navy); color: white; }
-        .badge-stock-bajo { background-color: #dc3545; }
-        .badge-stock-ok { background-color: var(--teal); }
+        .badge-rol-admin { background-color: #dc3545; }
+        .badge-rol-vendedor { background-color: #0d6efd; }
+        .badge-activo { background-color: var(--teal); }
+        .badge-inactivo { background-color: #6c757d; }
     </style>
 </head>
 <body>
@@ -22,18 +24,12 @@
         <a class="navbar-brand" th:href="@{/}"><i class="bi bi-box-seam"></i> MerchStock</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
-                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/usuarios}">Usuarios</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/ventas}">Ventas</a></li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" th:href="@{/productos/alertas}">
-                        Alertas
-                        <span th:if="${totalAlertas != null and totalAlertas > 0}"
-                            class="badge bg-danger" th:text="${totalAlertas}">0</span>
-                    </a>
-                </li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
             </ul>
         </div>
     </div>
@@ -41,7 +37,6 @@
 
 <div class="container my-4">
 
-    <!-- Mensajes -->
     <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show">
         <i class="bi bi-check-circle-fill"></i> <span th:text="${mensajeExito}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -51,89 +46,72 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-0"><i class="bi bi-grid-3x3-gap"></i> Productos</h2>
-            <small class="text-muted">Cat&aacute;logo de productos MerchStock</small>
+            <h2 class="mb-0"><i class="bi bi-people-fill"></i> Usuarios del Sistema</h2>
+            <small class="text-muted">Administradores y vendedores con acceso a MerchStock</small>
         </div>
-        <a th:href="@{/productos/nuevo}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Nuevo Producto
+        <a th:href="@{/usuarios/nuevo}" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i> Nuevo Usuario
         </a>
     </div>
 
-    <!-- Busqueda -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <form th:action="@{/productos}" method="get" class="row g-3">
-                <div class="col-md-10">
-                    <input type="text" name="buscar" class="form-control"
-                           placeholder="Buscar productos por nombre..."
-                           th:value="${buscar}">
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-outline-primary w-100">
-                        <i class="bi bi-search"></i> Buscar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Tabla de productos -->
     <div class="card shadow-sm">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th>SKU</th>
-                            <th>Nombre</th>
-                            <th>Categor&iacute;a</th>
-                            <th class="text-end">P. Venta</th>
-                            <th class="text-center">Stock</th>
+                            <th>Username</th>
+                            <th>Nombre Completo</th>
+                            <th>Email</th>
+                            <th class="text-center">Rol</th>
                             <th class="text-center">Estado</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:if="${#lists.isEmpty(productos)}">
-                            <td colspan="7" class="text-center text-muted py-4">
+                        <tr th:if="${#lists.isEmpty(usuarios)}">
+                            <td colspan="6" class="text-center text-muted py-4">
                                 <i class="bi bi-inbox" style="font-size: 2rem;"></i>
-                                <p class="mt-2 mb-0">No hay productos registrados</p>
+                                <p class="mt-2 mb-0">No hay usuarios registrados</p>
                             </td>
                         </tr>
-                        <tr th:each="prod : ${productos}">
-                            <td><code th:text="${prod.sku}">SKU-001</code></td>
-                            <td th:text="${prod.nombre}">Nombre</td>
+                        <tr th:each="usr : ${usuarios}">
                             <td>
-                                <span class="badge bg-secondary"
-                                      th:text="${prod.categoria != null ? prod.categoria.nombre : '-'}">
-                                    Categoria
-                                </span>
+                                <code th:text="${usr.username}">username</code>
                             </td>
-                            <td class="text-end">
-                                S/ <span th:text="${#numbers.formatDecimal(prod.precioVenta, 1, 2)}">0.00</span>
-                            </td>
-                            <td class="text-center fw-bold" th:text="${prod.stockActual}">0</td>
+                            <td th:text="${usr.nombreCompleto}">Nombre</td>
+                            <td th:text="${usr.email ?: '-'}">-</td>
                             <td class="text-center">
-                                <span th:if="${prod.stockActual <= prod.stockMinimo}" class="badge badge-stock-bajo">
-                                    <i class="bi bi-exclamation-triangle"></i> Stock bajo
+                                <span th:if="${usr.rol == T(com.merchstock.app.entity.Usuario.RolUsuario).ADMIN}"
+                                      class="badge badge-rol-admin">
+                                    <i class="bi bi-shield-lock-fill"></i> ADMIN
                                 </span>
-                                <span th:unless="${prod.stockActual <= prod.stockMinimo}" class="badge badge-stock-ok">
-                                    <i class="bi bi-check-circle"></i> OK
+                                <span th:if="${usr.rol == T(com.merchstock.app.entity.Usuario.RolUsuario).VENDEDOR}"
+                                      class="badge badge-rol-vendedor">
+                                    <i class="bi bi-person-badge"></i> VENDEDOR
                                 </span>
                             </td>
                             <td class="text-center">
-                                <a th:href="@{/productos/{id}/editar(id=${prod.id})}"
+                                <span th:if="${usr.activo}" class="badge badge-activo">
+                                    <i class="bi bi-check-circle"></i> Activo
+                                </span>
+                                <span th:unless="${usr.activo}" class="badge badge-inactivo">
+                                    <i class="bi bi-x-circle"></i> Inactivo
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/usuarios/{id}/editar(id=${usr.id})}"
                                    class="btn btn-sm btn-outline-primary"
                                    title="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form th:action="@{/productos/{id}/eliminar(id=${prod.id})}"
+                                <form th:if="${usr.activo}"
+                                      th:action="@{/usuarios/{id}/eliminar(id=${usr.id})}"
                                       method="post" style="display:inline;"
-                                      onsubmit="return confirm('Eliminar producto?');">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                      onsubmit="return confirm('Desactivar este usuario?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Desactivar">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -146,7 +124,7 @@
     </div>
 
     <div class="text-muted small mt-3">
-        Total: <span th:text="${#lists.size(productos)}">0</span> productos
+        Total: <span th:text="${#lists.size(usuarios)}">0</span> usuarios
     </div>
 
 </div>

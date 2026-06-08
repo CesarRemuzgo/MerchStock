@@ -236,6 +236,37 @@ Verificar en navegador: `http://localhost:8080`
 **Meta proyectada al cierre: 17-18 / 20**
 
 ---
+---
 
-_Última actualización: [06/07/2026]_
+## 📅 Sesión 2 - 8 de junio de 2026
+
+Avance significativo: 3 módulos completos en una sesión.
+
+### Implementado hoy:
+- ✅ **Módulo Clientes CRUD** — tipos DNI/RUC/CE/PASAPORTE, reactivación automática
+- ✅ **Módulo Usuarios CRUD** — encriptación BCrypt en passwords, manejo de roles ADMIN/VENDEDOR
+- ✅ **Módulo Ventas transaccional** ⭐ — el módulo más complejo:
+  - Carrito dinámico con JavaScript
+  - Cálculo automático de IGV (18%)
+  - Generación de código único `VTA-YYYY-NNNN`
+  - Defensa en 3 capas para stock (SQL + Java + Service)
+  - Anulación con reversa automática de stock
+  - Auditoría completa de movimientos
+
+### Lecciones aprendidas:
+- `FetchType.LAZY` causa problemas con `open-in-view=false` en vistas Thymeleaf
+  → Solución: EAGER para relaciones que se renderizan siempre
+- Validación del lado cliente (JS) es UX, NO es seguridad
+  → El service debe validar siempre (capa 3 de defensa)
+- Los DTOs separan la capa de presentación de la capa de persistencia
+  → Evitan que el cliente envíe precios manipulados
+
+### RFs cubiertos: 10 de 22 (~45%)
+
+### Próximos pasos:
+1. Reportes con Apache POI (exportar a Excel)
+2. Login real con BCrypt + control de roles
+3. Coordinación con el equipo: invitar a Luis, Liz y Luis como collaborators
+
+_Última actualización: [08/06/2026]_
 _Mantenido por: Cesar Remuzgo (PM)_

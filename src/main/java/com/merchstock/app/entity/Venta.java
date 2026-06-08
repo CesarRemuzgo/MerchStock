@@ -31,12 +31,12 @@ public class Venta {
     @Column(name = "codigo_venta", nullable = false, unique = true, length = 20)
     private String codigoVenta;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
     @NotNull(message = "El usuario que registra la venta es obligatorio")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 

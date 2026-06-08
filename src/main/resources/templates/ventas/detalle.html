@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Venta - MerchStock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --navy: #1F3864; --teal: #2E8B7A; }
+        body { background-color: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+        .bg-navy { background-color: var(--navy) !important; }
+        .navbar-brand { font-weight: 700; color: white !important; }
+        .card-header-navy { background-color: var(--navy); color: white; }
+        .table thead { background-color: #e9ecef; }
+        .badge-completada { background-color: var(--teal); }
+        .badge-anulada { background-color: #dc3545; }
+        .codigo-venta { font-family: 'Courier New', monospace; }
+        .total-card { background: linear-gradient(135deg, var(--navy), var(--teal)); color: white; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-navy navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}"><i class="bi bi-box-seam"></i> MerchStock</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/ventas}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill"></i> <span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">
+                <i class="bi bi-receipt"></i> Venta
+                <span class="codigo-venta text-primary" th:text="${venta.codigoVenta}">VTA-2026-0001</span>
+            </h2>
+            <small class="text-muted">
+                Registrada el
+                <span th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}">fecha</span>
+            </small>
+        </div>
+        <div>
+            <a th:href="@{/ventas}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+            <span th:if="${venta.estado == T(com.merchstock.app.entity.Venta.EstadoVenta).COMPLETADA}"
+                  class="badge badge-completada fs-6 ms-2">
+                <i class="bi bi-check-circle"></i> COMPLETADA
+            </span>
+            <span th:if="${venta.estado == T(com.merchstock.app.entity.Venta.EstadoVenta).ANULADA}"
+                  class="badge badge-anulada fs-6 ms-2">
+                <i class="bi bi-x-circle"></i> ANULADA
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- Info de la venta -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header card-header-navy">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informaci&oacute;n General</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <small class="text-muted">Cliente</small>
+                            <p class="mb-0 fw-bold"
+                               th:text="${venta.cliente != null ? venta.cliente.nombreCompleto : 'Cliente generico (sin registro)'}">
+                                Cliente
+                            </p>
+                            <small class="text-muted" th:if="${venta.cliente != null}">
+                                <span th:text="${venta.cliente.tipoDocumento}">DNI</span>:
+                                <span th:text="${venta.cliente.numeroDocumento}">12345678</span>
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Vendedor</small>
+                            <p class="mb-0 fw-bold" th:text="${venta.usuario.nombreCompleto}">Vendedor</p>
+                            <small class="text-muted">
+                                <i class="bi bi-person"></i> <span th:text="${venta.usuario.username}">user</span>
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">M&eacute;todo de Pago</small>
+                            <p class="mb-0">
+                                <span class="badge bg-secondary fs-6" th:text="${venta.metodoPago}">EFECTIVO</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6" th:if="${venta.observaciones}">
+                            <small class="text-muted">Observaciones</small>
+                            <p class="mb-0 small" th:text="${venta.observaciones}">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalle de items -->
+            <div class="card shadow-sm mt-3">
+                <div class="card-header card-header-navy">
+                    <h5 class="mb-0"><i class="bi bi-list-ul"></i> Productos Vendidos</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>SKU</th>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">P. Unit.</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="detalle : ${venta.detalles}">
+                                    <td><code th:text="${detalle.producto.sku}">SKU</code></td>
+                                    <td th:text="${detalle.producto.nombre}">Producto</td>
+                                    <td class="text-center fw-bold" th:text="${detalle.cantidad}">1</td>
+                                    <td class="text-end">
+                                        S/ <span th:text="${#numbers.formatDecimal(detalle.precioUnitario, 1, 2)}">0.00</span>
+                                    </td>
+                                    <td class="text-end fw-bold">
+                                        S/ <span th:text="${#numbers.formatDecimal(detalle.subtotal, 1, 2)}">0.00</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de totales -->
+        <div class="col-md-4">
+            <div class="card shadow total-card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-calculator"></i> Resumen
+                    </h5>
+                    <hr style="border-color: rgba(255,255,255,0.3);">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>S/ <span th:text="${#numbers.formatDecimal(venta.subtotal, 1, 2)}">0.00</span></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>IGV (18%):</span>
+                        <span>S/ <span th:text="${#numbers.formatDecimal(venta.igv, 1, 2)}">0.00</span></span>
+                    </div>
+                    <hr style="border-color: rgba(255,255,255,0.3);">
+                    <div class="d-flex justify-content-between fs-4 fw-bold">
+                        <span>TOTAL:</span>
+                        <span>S/ <span th:text="${#numbers.formatDecimal(venta.total, 1, 2)}">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anular venta -->
+            <div class="card shadow-sm mt-3"
+                 th:if="${venta.estado == T(com.merchstock.app.entity.Venta.EstadoVenta).COMPLETADA}">
+                <div class="card-body">
+                    <h6 class="card-title text-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Acciones Cr&iacute;ticas
+                    </h6>
+                    <p class="small text-muted">
+                        Al anular esta venta, el stock de los productos ser&aacute; revertido automáticamente.
+                    </p>
+                    <form th:action="@{/ventas/{id}/anular(id=${venta.id})}" method="post"
+                          onsubmit="return confirm('Esta accion anulara la venta y revertira el stock. Continuar?');">
+                        <input type="text" name="motivo" class="form-control form-control-sm mb-2"
+                               placeholder="Motivo de la anulacion (opcional)">
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                            <i class="bi bi-x-circle"></i> Anular Venta
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<footer class="bg-navy text-white text-center py-3 mt-5">
+    <small>&copy; 2026 MerchStock - APF3 - Grupo 3 - UTP 2026</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

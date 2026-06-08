@@ -29,7 +29,7 @@ public class VentaDetalle {
     private Venta venta;
 
     @NotNull(message = "El producto es obligatorio")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 

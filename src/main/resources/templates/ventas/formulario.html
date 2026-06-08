@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Venta - MerchStock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --navy: #1F3864; --teal: #2E8B7A; }
+        body { background-color: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+        .bg-navy { background-color: var(--navy) !important; }
+        .navbar-brand { font-weight: 700; color: white !important; }
+        .card-header-navy { background-color: var(--navy); color: white; }
+        .total-card { background: linear-gradient(135deg, var(--navy), var(--teal)); color: white; }
+        .item-row { background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-navy navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}"><i class="bi bi-box-seam"></i> MerchStock</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/ventas}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="bi bi-cart-plus"></i> Nueva Venta</h2>
+        <a th:href="@{/ventas}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Cancelar
+        </a>
+    </div>
+
+    <form id="formVenta" th:action="@{/ventas}" method="post">
+
+        <div class="row g-3">
+
+            <!-- Columna izquierda: datos -->
+            <div class="col-md-8">
+
+                <!-- Cliente y Vendedor -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header card-header-navy">
+                        <h5 class="mb-0"><i class="bi bi-person"></i> Cliente y Vendedor</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Cliente</label>
+                                <select class="form-select" name="clienteId">
+                                    <option value="">-- Cliente gen&eacute;rico (sin registro) --</option>
+                                    <option th:each="cli : ${clientes}"
+                                            th:value="${cli.id}"
+                                            th:text="${cli.tipoDocumento + ' ' + cli.numeroDocumento + ' - ' + cli.nombreCompleto}">
+                                        Cliente
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Vendedor <span class="text-danger">*</span></label>
+                                <select class="form-select" name="usuarioId" required>
+                                    <option value="">-- Seleccionar vendedor --</option>
+                                    <option th:each="vend : ${vendedores}"
+                                            th:value="${vend.id}"
+                                            th:text="${vend.username + ' - ' + vend.nombreCompleto}">
+                                        Vendedor
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">M&eacute;todo de Pago <span class="text-danger">*</span></label>
+                                <select class="form-select" name="metodoPago" required>
+                                    <option th:each="met : ${metodosPago}"
+                                            th:value="${met}"
+                                            th:text="${met}">EFECTIVO</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Observaciones</label>
+                                <input type="text" name="observaciones" class="form-control"
+                                       placeholder="Opcional..." maxlength="255">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carrito de productos -->
+                <div class="card shadow-sm">
+                    <div class="card-header card-header-navy">
+                        <h5 class="mb-0">
+                            <i class="bi bi-cart"></i> Productos en la Venta
+                        </h5>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Selector de producto -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-7">
+                                <select id="selectProducto" class="form-select">
+                                    <option value="">-- Seleccionar producto --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" id="inputCantidad" class="form-control"
+                                       placeholder="Cantidad" min="1" value="1">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" id="btnAgregar" class="btn btn-success w-100">
+                                    <i class="bi bi-plus-circle"></i> Agregar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Items agregados -->
+                        <div id="itemsContainer">
+                            <p id="mensajeVacio" class="text-muted text-center py-3">
+                                <i class="bi bi-cart-x" style="font-size: 2rem;"></i><br>
+                                No hay productos agregados todav&iacute;a
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Columna derecha: resumen -->
+            <div class="col-md-4">
+                <div class="card shadow total-card sticky-top" style="top: 20px;">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-calculator"></i> Resumen
+                        </h5>
+                        <hr style="border-color: rgba(255,255,255,0.3);">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Items:</span>
+                            <span id="totalItems">0</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span>S/ <span id="subtotalDisplay">0.00</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>IGV (18%):</span>
+                            <span>S/ <span id="igvDisplay">0.00</span></span>
+                        </div>
+                        <hr style="border-color: rgba(255,255,255,0.3);">
+                        <div class="d-flex justify-content-between fs-4 fw-bold mb-3">
+                            <span>TOTAL:</span>
+                            <span>S/ <span id="totalDisplay">0.00</span></span>
+                        </div>
+
+                        <button type="submit" id="btnRegistrar" class="btn btn-light w-100 fw-bold" disabled>
+                            <i class="bi bi-check-circle"></i> Registrar Venta
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<footer class="bg-navy text-white text-center py-3 mt-5">
+    <small>&copy; 2026 MerchStock - APF3 - Grupo 3 - UTP 2026</small>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT - Carrito interactivo
+============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    // Variables globales
+    const IGV_RATE = 0.18;
+    let productos = [];        // Catalogo cargado por API
+    let carrito = [];          // Items agregados
+    let itemIndex = 0;         // Indice unico para inputs
+
+    // 1. CARGAR PRODUCTOS DESDE LA API AL INICIAR
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/ventas/api/productos')
+            .then(response => response.json())
+            .then(data => {
+                productos = data;
+                llenarSelectProductos();
+            })
+            .catch(err => {
+                console.error('Error cargando productos:', err);
+                alert('No se pudo cargar el catalogo de productos.');
+            });
+    });
+
+    // 2. LLENAR EL DROPDOWN DE PRODUCTOS
+    function llenarSelectProductos() {
+        const select = document.getElementById('selectProducto');
+        productos.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            option.textContent = `${p.sku} - ${p.nombre} (S/ ${parseFloat(p.precioVenta).toFixed(2)}) [Stock: ${p.stockActual}]`;
+            option.dataset.precio = p.precioVenta;
+            option.dataset.stock = p.stockActual;
+            option.dataset.nombre = p.nombre;
+            option.dataset.sku = p.sku;
+            select.appendChild(option);
+        });
+    }
+
+    // 3. BOTON AGREGAR
+    document.getElementById('btnAgregar').addEventListener('click', function() {
+        const select = document.getElementById('selectProducto');
+        const cantidad = parseInt(document.getElementById('inputCantidad').value);
+
+        if (!select.value) {
+            alert('Selecciona un producto primero');
+            return;
+        }
+        if (!cantidad || cantidad < 1) {
+            alert('La cantidad debe ser al menos 1');
+            return;
+        }
+
+        const option = select.options[select.selectedIndex];
+        const stock = parseInt(option.dataset.stock);
+
+        // Validar stock disponible considerando lo que ya hay en el carrito
+        const cantidadEnCarrito = carrito
+            .filter(item => item.productoId == select.value)
+            .reduce((sum, item) => sum + item.cantidad, 0);
+
+        if (cantidadEnCarrito + cantidad > stock) {
+            alert(`Stock insuficiente. Disponible: ${stock}, en carrito: ${cantidadEnCarrito}, solicitado: ${cantidad}`);
+            return;
+        }
+
+        // Agregar al carrito
+        const item = {
+            id: itemIndex++,
+            productoId: select.value,
+            sku: option.dataset.sku,
+            nombre: option.dataset.nombre,
+            precio: parseFloat(option.dataset.precio),
+            cantidad: cantidad,
+            subtotal: parseFloat(option.dataset.precio) * cantidad
+        };
+        carrito.push(item);
+
+        // Resetear inputs
+        select.value = '';
+        document.getElementById('inputCantidad').value = 1;
+
+        renderCarrito();
+    });
+
+    // 4. RENDERIZAR EL CARRITO
+    function renderCarrito() {
+        const container = document.getElementById('itemsContainer');
+
+        // Si el carrito esta vacio, mostrar mensaje vacio
+        if (carrito.length === 0) {
+            container.innerHTML = `
+                <p id="mensajeVacio" class="text-muted text-center py-3">
+                    <i class="bi bi-cart-x" style="font-size: 2rem;"></i><br>
+                    No hay productos agregados todav&iacute;a
+                </p>
+            `;
+            actualizarTotales();
+            return;
+        }
+
+        // Si hay items, construir el HTML del carrito
+        let html = '';
+        carrito.forEach((item, idx) => {
+            html += `
+                <div class="item-row d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <strong>${item.nombre}</strong> <code class="text-muted small">${item.sku}</code><br>
+                        <small class="text-muted">
+                            ${item.cantidad} x S/ ${item.precio.toFixed(2)} = <strong>S/ ${item.subtotal.toFixed(2)}</strong>
+                        </small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="quitarItem(${item.id})" title="Quitar">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <input type="hidden" name="items[${idx}].productoId" value="${item.productoId}">
+                    <input type="hidden" name="items[${idx}].cantidad" value="${item.cantidad}">
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        actualizarTotales();
+    }
+
+    // 5. QUITAR ITEM
+    function quitarItem(id) {
+        carrito = carrito.filter(item => item.id !== id);
+        renderCarrito();
+    }
+
+    // 6. ACTUALIZAR TOTALES
+    function actualizarTotales() {
+        const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+        const subtotal = carrito.reduce((sum, item) => sum + item.subtotal, 0);
+        const igv = subtotal * IGV_RATE;
+        const total = subtotal + igv;
+
+        document.getElementById('totalItems').textContent = totalItems;
+        document.getElementById('subtotalDisplay').textContent = subtotal.toFixed(2);
+        document.getElementById('igvDisplay').textContent = igv.toFixed(2);
+        document.getElementById('totalDisplay').textContent = total.toFixed(2);
+
+        // Habilitar/deshabilitar boton registrar
+        document.getElementById('btnRegistrar').disabled = (carrito.length === 0);
+    }
+</script>
+
+</body>
+</html>
