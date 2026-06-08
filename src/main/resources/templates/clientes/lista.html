@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Categorias - MerchStock</title>
+    <title>Clientes - MerchStock</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -23,8 +23,8 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
-                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/categorias}">Categorias</a></li>
-                <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/clientes}">Clientes</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
             </ul>
         </div>
@@ -44,12 +44,29 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-0"><i class="bi bi-tags"></i> Categor&iacute;as</h2>
-            <small class="text-muted">Lineas de productos de MerchStock</small>
+            <h2 class="mb-0"><i class="bi bi-people"></i> Clientes</h2>
+            <small class="text-muted">Registro de clientes de MerchStock</small>
         </div>
-        <a th:href="@{/categorias/nuevo}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Nueva Categor&iacute;a
+        <a th:href="@{/clientes/nuevo}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Cliente
         </a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form th:action="@{/clientes}" method="get" class="row g-3">
+                <div class="col-md-10">
+                    <input type="text" name="buscar" class="form-control"
+                           placeholder="Buscar clientes por nombre..."
+                           th:value="${buscar}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div class="card shadow-sm">
@@ -58,50 +75,54 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Descripci&oacute;n</th>
+                            <th>Documento</th>
+                            <th>Nombre Completo</th>
+                            <th>Tel&eacute;fono</th>
+                            <th>Email</th>
                             <th class="text-center">Estado</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:if="${#lists.isEmpty(categorias)}">
-                            <td colspan="5" class="text-center text-muted py-4">
+                        <tr th:if="${#lists.isEmpty(clientes)}">
+                            <td colspan="6" class="text-center text-muted py-4">
                                 <i class="bi bi-inbox" style="font-size: 2rem;"></i>
-                                <p class="mt-2 mb-0">No hay categor&iacute;as registradas</p>
+                                <p class="mt-2 mb-0">No hay clientes registrados</p>
                             </td>
                         </tr>
-                        <tr th:each="cat : ${categorias}">
-                            <td th:text="${cat.id}">1</td>
+                        <tr th:each="cli : ${clientes}">
                             <td>
-                                <strong th:text="${cat.nombre}">Nombre</strong>
+                                <span class="badge bg-secondary" th:text="${cli.tipoDocumento}">DNI</span>
+                                <code th:text="${cli.numeroDocumento}">12345678</code>
                             </td>
-                            <td class="text-muted" th:text="${cat.descripcion ?: '-'}">
-                                Descripcion
+                            <td th:text="${cli.nombreCompleto}">Nombre</td>
+                            <td th:text="${cli.telefono ?: '-'}">-</td>
+                            <td th:text="${cli.email ?: '-'}">-</td>
+                            <td class="text-center">
+                                <span th:if="${cli.activo}" class="badge badge-activo">
+                                    <i class="bi bi-check-circle"></i> Activo
+                                </span>
+                                <span th:unless="${cli.activo}" class="badge badge-inactivo">
+                                    <i class="bi bi-x-circle"></i> Inactivo
+                                </span>
                             </td>
                             <td class="text-center">
-                                <span th:if="${cat.activo}" class="badge badge-activo">
-                                    <i class="bi bi-check-circle"></i> Activa
-                                </span>
-                                <span th:unless="${cat.activo}" class="badge badge-inactivo">
-                                    <i class="bi bi-x-circle"></i> Inactiva
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <a th:href="@{/categorias/{id}/editar(id=${cat.id})}"
-                                   class="btn btn-sm btn-outline-primary"
-                                   title="Editar">
+                                <a th:href="@{/clientes/{id}/editar(id=${cli.id})}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    th:title="${cli.activo} ? 'Editar' : 'Editar y reactivar'">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form th:if="${cat.activo}"
-                                      th:action="@{/categorias/{id}/eliminar(id=${cat.id})}"
-                                      method="post" style="display:inline;"
-                                      onsubmit="return confirm('Desactivar esta categoria?');">
+                                <form th:if="${cli.activo}"
+                                        th:action="@{/clientes/{id}/eliminar(id=${cli.id})}"
+                                        method="post" style="display:inline;"
+                                        onsubmit="return confirm('Desactivar este cliente?');">
                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Desactivar">
-                                        <i class="bi bi-trash"></i>
+                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
+                                <span th:unless="${cli.activo}" class="text-muted small ms-1">
+                                    <i class="bi bi-info-circle"></i> Edita para reactivar
+                                </span>
                             </td>
                         </tr>
                     </tbody>
@@ -111,7 +132,7 @@
     </div>
 
     <div class="text-muted small mt-3">
-        Total: <span th:text="${#lists.size(categorias)}">0</span> categor&iacute;as
+        Total: <span th:text="${#lists.size(clientes)}">0</span> clientes
     </div>
 
 </div>
