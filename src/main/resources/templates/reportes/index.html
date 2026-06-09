@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reportes - MerchStock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --navy: #1F3864; --teal: #2E8B7A; --steel: #4472C4; }
+        body { background-color: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+        .bg-navy { background-color: var(--navy) !important; }
+        .navbar-brand { font-weight: 700; color: white !important; }
+        .card-reporte {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            border-radius: 12px;
+        }
+        .card-reporte:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .icono-reporte {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+        .text-navy { color: var(--navy); }
+        .text-teal { color: var(--teal); }
+        .text-steel { color: var(--steel); }
+        .btn-descargar {
+            background-color: var(--navy);
+            color: white;
+            border: none;
+            transition: background-color 0.2s;
+        }
+        .btn-descargar:hover {
+            background-color: var(--steel);
+            color: white;
+        }
+        .info-card {
+            background: linear-gradient(135deg, var(--navy), var(--teal));
+            color: white;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-navy navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}"><i class="bi bi-box-seam"></i> MerchStock</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/ventas}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/reportes}">Reportes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+
+    <!-- Header de la pagina -->
+    <div class="mb-4">
+        <h2 class="mb-1"><i class="bi bi-file-earmark-spreadsheet text-teal"></i> Reportes Excel</h2>
+        <p class="text-muted mb-0">
+            Genera y descarga reportes en formato Excel (.xlsx) usando Apache POI
+        </p>
+    </div>
+
+    <!-- Info card -->
+    <div class="card info-card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle-fill" style="font-size: 2rem;"></i>
+                <div class="ms-3">
+                    <h6 class="mb-1">&iquest;C&oacute;mo funciona?</h6>
+                    <small>
+                        Selecciona el reporte que necesitas y haz clic en el bot&oacute;n de descarga.
+                        El archivo se generar&aacute; en tiempo real con los datos actuales del sistema
+                        y se descargar&aacute; autom&aacute;ticamente.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards de reportes -->
+    <div class="row g-4">
+
+        <!-- Reporte 1: Productos -->
+        <div class="col-md-4">
+            <div class="card card-reporte shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-box-seam icono-reporte text-navy"></i>
+                    <h5 class="card-title">Reporte de Productos</h5>
+                    <p class="card-text text-muted small">
+                        Listado completo de productos activos con SKU, nombre,
+                        categor&iacute;a, precios y stock actual.
+                    </p>
+                    <a th:href="@{/reportes/productos}" class="btn btn-descargar w-100 mt-2">
+                        <i class="bi bi-download"></i> Descargar Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reporte 2: Stock Bajo -->
+        <div class="col-md-4">
+            <div class="card card-reporte shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-exclamation-triangle icono-reporte text-warning"></i>
+                    <h5 class="card-title">Reporte de Stock Bajo</h5>
+                    <p class="card-text text-muted small">
+                        Productos que han llegado o est&aacute;n por debajo
+                        del stock m&iacute;nimo (RF15). Cr&iacute;tico para reabastecimiento.
+                    </p>
+                    <a th:href="@{/reportes/stock-bajo}" class="btn btn-descargar w-100 mt-2">
+                        <i class="bi bi-download"></i> Descargar Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reporte 3: Ventas -->
+        <div class="col-md-4">
+            <div class="card card-reporte shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-cart-check icono-reporte text-teal"></i>
+                    <h5 class="card-title">Reporte de Ventas</h5>
+                    <p class="card-text text-muted small">
+                        Historial completo de ventas con c&oacute;digo, fecha,
+                        cliente, vendedor, subtotal, IGV y total (RF19-20).
+                    </p>
+                    <a th:href="@{/reportes/ventas}" class="btn btn-descargar w-100 mt-2">
+                        <i class="bi bi-download"></i> Descargar Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer info -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h6 class="mb-2"><i class="bi bi-gear text-muted"></i> Detalles t&eacute;cnicos</h6>
+            <ul class="text-muted small mb-0">
+                <li><strong>Formato:</strong> Microsoft Excel 2007+ (.xlsx)</li>
+                <li><strong>Librer&iacute;a:</strong> Apache POI 5.3.0 (XSSFWorkbook)</li>
+                <li><strong>Codificaci&oacute;n:</strong> UTF-8 con estilos personalizados</li>
+                <li><strong>Compatible con:</strong> Excel, LibreOffice Calc, Google Sheets</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<footer class="bg-navy text-white text-center py-3 mt-5">
+    <small>&copy; 2026 MerchStock - APF3 - Grupo 3 - UTP 2026</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
