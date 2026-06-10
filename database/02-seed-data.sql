@@ -9,13 +9,19 @@ USE merchstock_db;
 
 -- ============================================================
 -- 1. USUARIOS INICIALES
--- Password en texto plano: "admin123" (hash BCrypt cost=10)
+-- Contraseñas reales (hash BCrypt 2a, cost=10, verificados):
+--   admin     -> Admin2026
+--   cremuzgo  -> Cesar2026
+--   pventa1   -> Patricia2026
+--   avendedor -> Andrea2026
+--   falejos   -> BackEnd2026
 -- ============================================================
 INSERT INTO usuarios (username, password_hash, nombre_completo, email, rol, activo) VALUES
-('admin',    '$2a$10$N9qo8uLOickgx2ZMRZoMye1VJMBVkH8U5Z7cLW.rN9Y8Z2qz9Yp1G', 'Administrador del Sistema', 'admin@merchstock.pe',    'ADMIN',    TRUE),
-('cremuzgo', '$2a$10$N9qo8uLOickgx2ZMRZoMye1VJMBVkH8U5Z7cLW.rN9Y8Z2qz9Yp1G', 'Cesar Remuzgo Angeles',     'cremuzgo@merchstock.pe', 'ADMIN',    TRUE),
-('pventa1',  '$2a$10$N9qo8uLOickgx2ZMRZoMye1VJMBVkH8U5Z7cLW.rN9Y8Z2qz9Yp1G', 'Patricia Rojas Lujan',      'patricia@merchstock.pe', 'VENDEDOR', TRUE),
-('avendedor','$2a$10$N9qo8uLOickgx2ZMRZoMye1VJMBVkH8U5Z7cLW.rN9Y8Z2qz9Yp1G', 'Andrea Flores Caceres',     'andrea@merchstock.pe',   'VENDEDOR', TRUE);
+('admin',    '$2a$10$YutPhbJPO.PmBqyK/VJ21Oh8ZmXlC1ltSCnCIjZf7d.bZMEoadZNK', 'Administrador del Sistema', 'admin@merchstock.pe',    'ADMIN',    TRUE),
+('cremuzgo', '$2a$10$HoIuop1dmt4.t0wiN6qKDe.v8F0OSb57L18nEEdiz9BQ61ovgh.bu', 'Cesar Remuzgo Angeles',     'cremuzgo@merchstock.pe', 'ADMIN',    TRUE),
+('pventa1',  '$2a$10$X5WxFM8Q1P7WIQPG9TLg2e6BSALE61nl5MzpvfpzXxxjU/rJtp7J6', 'Patricia Rojas Lujan',      'patricia@merchstock.pe', 'VENDEDOR', TRUE),
+('avendedor','$2a$10$KwwcNW9g7PW2NEu5gd149enisP35NpiAlIifLvbeQyaMQhYuYQFcO', 'Andrea Flores Caceres',     'andrea@merchstock.pe',   'VENDEDOR', TRUE),
+('falejos',  '$2a$10$qjCYudmy2Eqi4fNy3PlmK.Ahon0o93ZYEAc8bw/AdPnQnkBBU5zgO', 'Luis Fernando Alejos Perez','falejos@merchstock.pe',  'ADMIN',    TRUE);
 
 -- ============================================================
 -- 2. CATEGORIAS (8 lineas de productos de MerchStock)
