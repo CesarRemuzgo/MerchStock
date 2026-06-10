@@ -1,86 +1,171 @@
-# Guía de Contribución — MerchStock
+# 🤝 Guía de Contribución — MerchStock
 
-Esta guía documenta cómo el equipo del Grupo 3 colabora en el desarrollo del proyecto MerchStock.
+> Equipo Grupo 3 — UTP 2026
+> Esta guía te explica **paso a paso** cómo hacer tu aporte al repositorio.
+> Si nunca usaste Git, sigue las instrucciones tal cual y no te pierdes.
 
-## 🌳 Estructura de Ramas
+---
 
-- **`main`** — Código estable. Solo recibe merges para entregables APF.
-- **`develop`** — Rama de integración del equipo. Aquí se mergean las features.
-- **`feature/*`** — Una rama por cada funcionalidad nueva. Ej: `feature/login`, `feature/crud-productos`.
+## 🎯 ¿Qué tengo que hacer? (resumen)
 
-## 🔄 Flujo de Trabajo
+Cada integrante debe dejar **2 aportes** en el repositorio:
 
-### Para agregar una funcionalidad nueva:
+1. ✏️ **Agregar tu usuario de GitHub** al `README.md` y al `ESTADO_DEL_PROYECTO.md`
+2. 📄 **Crear un documento** en la carpeta `docs/` según tu rol (ver tabla abajo)
 
-1. Actualiza tu develop local:
-```bash
-   git checkout develop
-   git pull origin develop
-```
+Cada aporte es un **commit**. Así quedan tus contribuciones visibles en el
+historial del repositorio, que es lo que pide la rúbrica de Control de Versiones.
 
-2. Crea una rama feature:
-```bash
-   git checkout -b feature/nombre-de-la-funcionalidad
-```
+---
 
-3. Trabaja en tu funcionalidad (escribe código, prueba, etc.)
+## 📋 Tu tarea según tu rol
 
-4. Haz commits frecuentes:
-```bash
-   git add .
-   git commit -m "feat: descripción del cambio"
-```
-
-5. Sube tu rama a GitHub:
-```bash
-   git push -u origin feature/nombre-de-la-funcionalidad
-```
-
-6. Abre un Pull Request (PR) en GitHub apuntando a `develop`
-7. Espera review de al menos un compañero
-8. Mergea el PR después de aprobación
-
-## 📝 Convención de Commits
-
-Usamos **Conventional Commits** en español.
-
-### Formato
-
-### Tipos válidos
-
-| Prefijo | Cuándo usarlo | Ejemplo |
+| Integrante | Rol | Documento a crear en `docs/` |
 |---|---|---|
-| `feat:` | Nueva funcionalidad | `feat: agregar CRUD de productos` |
-| `fix:` | Corregir un bug | `fix: corregir cálculo de stock negativo` |
-| `docs:` | Solo documentación | `docs: agregar Javadoc a ProductoService` |
-| `style:` | Formato, espacios | `style: aplicar formato a login.html` |
-| `refactor:` | Refactorización | `refactor: extraer validación a util` |
-| `test:` | Tests | `test: agregar tests a VentaService` |
-| `chore:` | Configuración, deps | `chore: agregar dependencia Apache POI` |
+| **Luis Fernando Alejos** | Backend | `docs/BACKEND.md` — describe los endpoints y servicios principales |
+| **Liz Anyeli Cueva** | Analista/Docs | `docs/MANUAL_USUARIO.md` — guía de uso del sistema para el usuario final |
+| **Luis Ernesto Romani** | QA/DevOps | `docs/PLAN_PRUEBAS.md` — casos de prueba y checklist de calidad |
+| **Daleth Correa** | Frontend/UX | `docs/GUIA_ESTILOS.md` — paleta de colores, tipografía y componentes UI |
 
-### Reglas
+> 💡 No tiene que ser largo. Media página bien hecha es suficiente. Lo importante
+> es que sea **tu aporte** y que entiendas lo que escribiste (la rúbrica evalúa autoría).
 
-- En español
-- Verbo en infinitivo (agregar, corregir, implementar)
-- NO en gerundio (agregando) ni pasado (agregué)
-- Menos de 72 caracteres
-- Sin punto al final
-- Una sola línea
+---
 
-## 👥 Asignación de Módulos
+## ⚙️ Paso 0: Configurar Git (solo la primera vez)
 
-| Integrante | Módulos asignados |
-|---|---|
-| Cesar Remuzgo (PM) | Coordinación, arquitectura, integración |
-| Luis Fernando Alejos | Auth, productos, base de datos |
-| Liz Anyeli Cueva | Documentación técnica, análisis |
-| Daleth Correa | Ventas, alertas, frontend Thymeleaf |
-| Luis Ernesto Romani | QA, testing, GitHub, control de versiones |
+Si nunca configuraste Git en tu PC, abre una terminal y ejecuta
+(reemplaza con tus datos reales):
 
-## ⚠️ Reglas Importantes
+```bash
+git config --global user.name "Tu Nombre"
+git config --global user.email "tu_correo@utp.edu.pe"
+```
 
-1. **NUNCA** hagas push directo a `main` — está protegida.
-2. **NUNCA** hagas push directo a `develop` sin coordinarlo — usa siempre ramas feature + PR.
-3. **SIEMPRE** haz `git pull origin develop` antes de empezar a trabajar.
-4. **SIEMPRE** prueba tu código localmente antes de subir.
-5. **Cada miembro** debe hacer commits con SU PROPIA cuenta de GitHub.
+> ⚠️ Usa el **mismo correo** que tienes en tu cuenta de GitHub. Así tus commits
+> se asocian a tu perfil y aparecen con tu foto en el historial.
+
+---
+
+## 📥 Paso 1: Clonar el proyecto (solo la primera vez)
+
+```bash
+git clone https://github.com/CesarRemuzgo/MerchStock
+cd MerchStock
+```
+
+Si ya lo clonaste antes, solo entra a la carpeta y actualiza:
+
+```bash
+cd MerchStock
+git checkout develop
+git pull origin develop
+```
+
+---
+
+## 🌿 Paso 2: Trabajar en la rama `develop`
+
+Siempre trabajamos sobre la rama `develop` (NO sobre `main`):
+
+```bash
+git checkout develop
+git pull origin develop
+```
+
+Esto te asegura tener la última versión antes de hacer tus cambios.
+
+---
+
+## ✏️ Paso 3: Hacer tus cambios
+
+### 3.1 — Agrega tu usuario de GitHub
+
+Abre `README.md` y `docs/ESTADO_DEL_PROYECTO.md`, busca tu fila en la tabla
+del equipo y cambia `@pendiente` o `(pendiente)` por tu usuario real.
+
+Ejemplo:
+| Backend Lead | Luis Fernando Alejos Pérez | @pendiente |
+se convierte en:
+| Backend Lead | Luis Fernando Alejos Pérez | @tu-usuario-github |
+
+### 3.2 — Crea tu documento en `docs/`
+
+Crea el archivo que te corresponde según la tabla (ej. `docs/BACKEND.md`) y
+escribe tu contenido. Puedes usar esta plantilla mínima:
+
+```markdown
+# [Título de tu documento]
+
+> Autor: [Tu Nombre] — [Tu Rol] — Grupo 3
+
+## Introducción
+[Breve descripción de qué trata este documento]
+
+## Contenido
+[Tu aporte: la información de tu sección]
+
+## Conclusión
+[Cierre breve]
+```
+
+---
+
+## 💾 Paso 4: Guardar tus cambios (commit)
+
+```bash
+git add .
+git commit -m "docs: agregar [tu documento] y usuario de [tu nombre]"
+```
+
+**Ejemplo real (Luis Fernando):**
+```bash
+git add .
+git commit -m "docs: agregar documentacion de backend y usuario de Luis Alejos"
+```
+
+> 📝 Usamos el formato **Conventional Commits**: el mensaje empieza con `docs:`
+> porque es documentación. Para código sería `feat:` o `fix:`.
+
+---
+
+## 🚀 Paso 5: Subir tus cambios (push)
+
+```bash
+git push origin develop
+```
+
+¡Listo! Tu aporte ya está en GitHub. Verifícalo entrando a:
+https://github.com/CesarRemuzgo/MerchStock/commits/develop
+
+Deberías ver tu commit con tu nombre y foto en la lista.
+
+---
+
+## ❓ Problemas comunes
+
+### "Updates were rejected" al hacer push
+Significa que alguien subió cambios antes que tú. Solución:
+```bash
+git pull origin develop
+git push origin develop
+```
+Si te pide resolver un conflicto, avisa al PM (Cesar) por el grupo.
+
+### "Please tell me who you are"
+No configuraste Git (Paso 0). Vuelve a ese paso.
+
+### No sé qué escribir en mi documento
+Revisa el `ESTADO_DEL_PROYECTO.md`, ahí está casi toda la info del sistema.
+Adapta lo que corresponde a tu rol. Si tienes dudas, pregunta en el grupo.
+
+---
+
+## 📞 Coordinación
+
+Cualquier duda, escribir al **Project Manager (Cesar)** por el grupo del equipo.
+La fecha límite para tener todos los commits es **jueves 12 de junio**.
+
+---
+
+_Gracias por contribuir a MerchStock 🚀_

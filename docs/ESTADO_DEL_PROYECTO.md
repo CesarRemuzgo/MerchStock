@@ -32,6 +32,9 @@
 | Daleth Correa Ángeles | Frontend/UX | @DalethCorreaAngeles |
 | Luis Ernesto Romani Villanueva | QA/DevOps | (pendiente) |
 
+> 📌 **Equipo:** revisen [`CONTRIBUTING.md`](../CONTRIBUTING.md) para saber cómo
+> hacer su aporte al repositorio paso a paso.
+
 ---
 
 ## 🏗️ Stack Técnico
@@ -43,6 +46,7 @@
 - **Base de datos:** MySQL 8 (BD: `merchstock_db`)
 - **ORM:** Spring Data JPA / Hibernate
 - **Seguridad:** Spring Security + BCrypt (cost-factor 10)
+- **Testing:** JUnit 5 + Mockito
 
 ### Frontend
 - **Templating:** Thymeleaf
@@ -63,7 +67,7 @@ Las 4 librerías exigidas por la rúbrica están USÁNDOSE EN CÓDIGO:
 |----------|----------|
 | ✅ **Google Guava 33.3.1** | `Preconditions.checkNotNull/checkArgument` en services |
 | ✅ **Apache POI 5.3.0** | `XSSFWorkbook` para generación de reportes Excel |
-| ✅ **Apache Commons Lang 3.17.0** | `StringUtils.isBlank/isNotBlank` en services |
+| ✅ **Apache Commons Lang 3.17.0** | `StringUtils.isBlank/isNotBlank/trimToEmpty` en services e importación CSV |
 | ✅ **Logback (vía Spring)** | `@Slf4j` + `logback-spring.xml` con 3 appenders |
 
 ---
@@ -88,11 +92,12 @@ Las 4 librerías exigidas por la rúbrica están USÁNDOSE EN CÓDIGO:
 
 ---
 
-## ✅ Módulos Implementados (7 completos)
+## ✅ Módulos Implementados (10 completos)
 
-### 1. Home Dashboard
-- Pantalla principal con cards de acceso rápido
-- Contador de alertas de stock bajo
+### 1. Home Dashboard ⭐ (actualizado)
+- Panel de control con 4 tarjetas de estadísticas en tiempo real:
+  total de productos, alertas de stock bajo, ventas del día, ingresos del día
+- Tabla de últimas ventas registradas con estado
 - Navbar con 7 enlaces consistentes en todo el sistema
 
 ### 2. Productos CRUD + Alertas (RF15)
@@ -168,6 +173,24 @@ Las 4 librerías exigidas por la rúbrica están USÁNDOSE EN CÓDIGO:
 | Reportes | ✅ | ✅ |
 | Alertas | ✅ | ✅ |
 
+### 9. Importación masiva de productos desde CSV ⭐ (nuevo)
+- Carga de productos en lote desde archivo `.csv`
+- Validación de cada campo con **Apache Commons Lang** (`StringUtils`)
+  y **Google Guava** (`Preconditions`)
+- Resolución de categoría por nombre (case-insensitive)
+- Reutiliza `productoService.crear()` → hereda validación de SKU duplicado
+- Procesamiento línea por línea: una fila inválida no aborta el proceso
+- DTO `ResultadoImportacion` con resumen de éxitos y errores
+- Vista `importar.html` con instrucciones de formato
+
+### 10. Pruebas Unitarias (TDD / JUnit 5) ⭐ (nuevo)
+- **JUnit 5 + Mockito** sobre la capa de servicios
+- `ProductoServiceImplTest` (5 tests): reducción de stock, validación de
+  cantidad, normalización de SKU, detección de SKU duplicado
+- `VentaServiceImplTest` (1 test): cálculo de IGV 18%, total y código de venta
+- Repositorios simulados con mocks (sin BD real) → pruebas rápidas y aisladas
+- **7 tests en verde (BUILD SUCCESS)**
+
 ---
 
 ## 🔑 Credenciales de Prueba
@@ -188,13 +211,14 @@ Todos los usuarios tienen hash BCrypt real (verificado en MySQL):
 
 | Métrica | Valor |
 |---------|-------|
-| Pantallas funcionales | 14+ |
-| Módulos completos | 7 |
-| RFs cubiertos | ~12 de 22 (~55%) |
-| Líneas de código Java | ~2500+ |
+| Pantallas funcionales | 15+ |
+| Módulos completos | 10 |
+| RFs cubiertos | ~14 de 22 (~64%) |
+| Líneas de código Java | ~3000+ |
+| Pruebas unitarias | 7 (todas en verde) |
 | Tablas en BD | 7 con constraints e índices |
-| Commits en develop | 10+ |
-| Patrones aplicados | MVC, DAO, SOLID, RBAC, Defense in Depth |
+| Commits en develop | 13+ |
+| Patrones aplicados | MVC, DAO, SOLID, RBAC, Defense in Depth, TDD |
 
 ---
 
@@ -202,13 +226,16 @@ Todos los usuarios tienen hash BCrypt real (verificado en MySQL):
 
 | Criterio | Max | Actual | Meta |
 |----------|-----|--------|------|
-| Diseño solución (MVC+DAO+SOLID+Seguridad) | 3 | 3/3 ✅ | 3/3 |
+| Diseño solución (MVC+DAO+SOLID+TDD+Seguridad) | 3 | 3/3 ✅ | 3/3 |
 | Uso recursos Java (4 librerías) | 2 | 2/2 ✅ | 2/2 |
 | Control versiones | 3 | 2.5/3 | 3/3 |
-| Interfaces gráficas (100% alcance) | 6 | ~5/6 | 6/6 |
-| Construcción producto final | 4 | 3.5/4 | 4/4 |
+| Interfaces gráficas (100% alcance) | 6 | ~5.5/6 | 6/6 |
+| Construcción producto final | 4 | 4/4 ✅ | 4/4 |
 | Sustentación oral | 2 | 0/2 ⏳ | 2/2 |
-| **TOTAL** | **20** | **~16/20** | **18-20/20** |
+| **TOTAL** | **20** | **~17/20** | **18-20/20** |
+
+> El criterio con mayor margen de mejora pendiente es **Control de versiones**:
+> requiere commits visibles de los 5 integrantes (ver `CONTRIBUTING.md`).
 
 ---
 
@@ -233,14 +260,14 @@ Todos los usuarios tienen hash BCrypt real (verificado en MySQL):
 - Módulo Login + Roles con Spring Security
 - 21 archivos en último commit
 
-### ⏳ PENDIENTE
+**Sesión 4 (martes 10/jun):** Tests + Dashboard + CSV + Javadoc
+- ✅ Tests unitarios con JUnit 5 + Mockito (7 tests en verde)
+- ✅ Dashboard con estadísticas en tiempo real
+- ✅ Importación masiva de productos desde CSV
+- ✅ Generación de Javadoc HTML
+- ✅ Actualización de documentación del repo (ESTADO, README, CONTRIBUTING)
 
-**Martes 10/jun (2.5 horas):**
-- Tests unitarios TDD (45 min)
-- Dashboard con estadísticas (30 min)
-- Importar productos desde CSV con Apache Commons (45 min)
-- Generar Javadoc HTML con `.\mvnw javadoc:javadoc` (15 min)
-- Coordinar commits del equipo (30 min)
+### ⏳ PENDIENTE
 
 **Miércoles 11/jun (3 horas):**
 - Informe Word APF3 (90 min)
@@ -264,7 +291,7 @@ Todos los usuarios tienen hash BCrypt real (verificado en MySQL):
 - ❌ No revertir relaciones EAGER a LAZY en Venta, VentaDetalle, Producto.categoria
 
 ### ✅ ADOPTADO
-- ✅ MVC + DAO + SOLID (TDD opcional pero deseable como diferenciador)
+- ✅ MVC + DAO + SOLID + TDD (pruebas unitarias implementadas)
 - ✅ Eliminación lógica (`activo = false`) en todos los CRUDs
 - ✅ Lombok `@RequiredArgsConstructor` + `@Slf4j` en services
 - ✅ Bootstrap 5 vía CDN + Bootstrap Icons
@@ -272,6 +299,7 @@ Todos los usuarios tienen hash BCrypt real (verificado en MySQL):
 - ✅ Navbar consistente con 7 enlaces en todas las vistas
 - ✅ Dropdown de usuario a la derecha en navbar
 - ✅ Footer: `© 2026 MerchStock - APF3 - Grupo 3 - UTP 2026`
+- ✅ Patrón PowerShell: `mkdir [ruta] -Force` antes de `New-Item` para crear archivos
 
 ---
 
@@ -284,6 +312,9 @@ Todos los usuarios tienen hash BCrypt real (verificado en MySQL):
 | 3 | Bug en `renderCarrito()` JS: mensaje vacío que se borraba | Regenerar mensaje vacío en el HTML del container, no usar variable |
 | 4 | Dropdown de usuario no abría en navbar | Faltaba `<script src="...bootstrap.bundle.min.js"></script>` en algunas vistas |
 | 5 | `BusinessException` no detectaba stock insuficiente | Validación explícita en service ANTES de `save()` |
+| 6 | Carpeta `test` no aparecía en el Explorer de VS Code | Crear carpeta con `mkdir [ruta] -Force` explícito antes de `New-Item` |
+| 7 | `Property 'nombre' cannot be found on Cliente` en Thymeleaf | El campo real es `nombreCompleto` — revisar entity antes de generar vistas |
+| 8 | `BUILD FAILURE` en Javadoc por símbolo `<` en comentarios | Javadoc interpreta `<` como HTML; los archivos HTML igual se generan |
 
 ---
 
@@ -300,10 +331,15 @@ cd F:\GitHub\MerchStock
 .\mvnw clean install -DskipTests
 ```
 
+### Correr las pruebas unitarias
+```powershell
+.\mvnw test
+```
+
 ### Generar Javadoc HTML
 ```powershell
 .\mvnw javadoc:javadoc
-# Salida: target/site/apidocs/
+# Salida: target/reports/apidocs/
 ```
 
 ### Verificar dependencias
@@ -316,11 +352,9 @@ cd F:\GitHub\MerchStock
 ## 🎓 Conceptos Clave para la Sustentación
 
 ### Defensa en 3 Capas (Stock no negativo)
-```
 Capa 1 (BD):      CHECK (stock_actual >= 0)
 Capa 2 (Java):    @Min(0) en entity Producto.stockActual
 Capa 3 (Service): validación explícita + BusinessException antes del save
-```
 
 ### Transaccionalidad
 `@Transactional` en `registrarVenta()` garantiza atomicidad:
@@ -336,6 +370,11 @@ encriptado vs el hash almacenado.
 Cada usuario tiene un rol (ADMIN o VENDEDOR). Las URLs están
 mapeadas a roles específicos en `SecurityConfig`. Aplica el principio
 de mínimo privilegio.
+
+### Pruebas Unitarias (TDD)
+JUnit 5 + Mockito sobre la capa de servicios. Los repositorios se
+simulan con mocks, así se prueba SOLO la lógica de negocio (cálculo
+de IGV, defensa de stock, validaciones) sin levantar Spring ni MySQL.
 
 ### MVC + DAO + SOLID
 - **MVC:** Controller → Service → Repository → Entity → View
@@ -357,5 +396,5 @@ de mínimo privilegio.
 
 ---
 
-_Última actualización: 9 de junio de 2026, 23:00 horas_
-_Próxima sesión planificada: martes 10 de junio, mañana_
+_Última actualización: 10 de junio de 2026_
+_Próxima sesión planificada: miércoles 11 de junio (Informe Word + PowerPoint)_
