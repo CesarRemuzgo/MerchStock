@@ -13,6 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.merchstock.app.dto.ResultadoImportacion;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Controlador MVC para la gestion de Productos (capa View - Controller)
@@ -178,5 +180,62 @@ public class ProductoController {
         model.addAttribute("productos", productoService.obtenerProductosConStockBajo());
         model.addAttribute("productosSinStock", productoService.obtenerProductosSinStock());
         return "productos/alertas";
+    }
+
+    /**
+     * Muestra el formulario para importar productos desde CSV.
+     * URL: GET /productos/importar
+     */
+    @GetMapping("/importar")
+    public String mostrarFormularioImportar() {
+        log.debug("Mostrando formulario de importacion CSV");
+        return "productos/importar";
+    }
+
+    /**
+     * Procesa el archivo CSV subido e importa los productos.
+     * URL: POST /productos/importar
+     */
+    @PostMapping("/importar")
+    public String importarCsv(@RequestParam("archivo") MultipartFile archivo,
+                              RedirectAttributes redirectAttributes) {
+        log.info("Recibido archivo CSV para importar: {}", archivo.getOriginalFilename());
+
+        // Validar que se haya subido un archivo
+        if (archivo.isEmpty()) {
+            redirectAttributes.addFlashAttribute("mensajeError",
+                    "Debe seleccionar un archivo CSV");
+            return "redirect:/productos/importar";
+        }
+
+        // Validar extension .csv
+        String nombreArchivo = archivo.getOriginalFilename();
+        if (nombreArchivo == null || !nombreArchivo.toLowerCase().endsWith(".csv")) {
+            redirectAttributes.addFlashAttribute("mensajeError",
+                    "El archivo debe tener extension .csv");
+            return "redirect:/productos/importar";
+        }
+
+        try {
+            ResultadoImportacion resultado =
+                    productoService.importarDesdeCsv(archivo.getInputStream());
+
+            // Mensaje de exito con el resumen
+            redirectAttributes.addFlashAttribute("mensajeExito",
+                    resultado.getExitosos() + " producto(s) importado(s) correctamente");
+
+            // Si hubo errores, los pasamos para mostrarlos en detalle
+            if (resultado.tieneErrores()) {
+                redirectAttributes.addFlashAttribute("erroresImportacion", resultado.getErrores());
+            }
+
+            return "redirect:/productos";
+
+        } catch (Exception ex) {
+            log.error("Error al importar CSV: {}", ex.getMessage());
+            redirectAttributes.addFlashAttribute("mensajeError",
+                    "Error al procesar el archivo: " + ex.getMessage());
+            return "redirect:/productos/importar";
+        }
     }
 }

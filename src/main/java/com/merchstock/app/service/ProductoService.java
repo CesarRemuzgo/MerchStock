@@ -2,6 +2,7 @@ package com.merchstock.app.service;
 
 import com.merchstock.app.entity.Categoria;
 import com.merchstock.app.entity.Producto;
+import com.merchstock.app.exception.BusinessException;
 
 import java.util.List;
 
@@ -81,4 +82,10 @@ public interface ProductoService {
      * Aumenta el stock de un producto (al recibir mercaderia)
      */
     void aumentarStock(Long idProducto, Integer cantidad);
+
+    /**
+     * Importa productos masivamente desde un archivo CSV.
+     * Devuelve un resumen con la cantidad de exitos y la lista de errores.
+     */
+    com.merchstock.app.dto.ResultadoImportacion importarDesdeCsv(java.io.InputStream csvInputStream);
 }

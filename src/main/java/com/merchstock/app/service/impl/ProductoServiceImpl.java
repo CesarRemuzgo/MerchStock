@@ -12,7 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.merchstock.app.dto.ResultadoImportacion;
+import com.merchstock.app.repository.CategoriaRepository;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -36,6 +42,7 @@ import java.util.List;
 public class ProductoServiceImpl implements ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final CategoriaRepository categoriaRepository;
 
     @Override
     public List<Producto> listarTodos() {
@@ -181,5 +188,122 @@ public class ProductoServiceImpl implements ProductoService {
         Producto producto = buscarPorId(idProducto);
         producto.setStockActual(producto.getStockActual() + cantidad);
         productoRepository.save(producto);
+    }
+
+    /**
+     * Importa productos masivamente desde un CSV.
+     *
+     * Formato esperado (con cabecera en la primera linea):
+     *   sku,nombre,categoria,precio_compra,precio_venta,stock_actual,stock_minimo
+     *
+     * Para cada linea:
+     *  - Valida campos con Apache Commons Lang (StringUtils) y Guava (Preconditions)
+     *  - Resuelve la categoria por nombre (ignorando mayusculas)
+     *  - Reutiliza crear() para heredar la validacion de SKU duplicado y normalizacion
+     *
+     * Acumula errores por linea sin abortar todo el proceso: una linea mala
+     * no impide importar las demas.
+     */
+    @Override
+    @Transactional
+    public ResultadoImportacion importarDesdeCsv(InputStream csvInputStream) {
+        log.info("Iniciando importacion de productos desde CSV");
+        Preconditions.checkNotNull(csvInputStream, "El archivo CSV no puede ser nulo");
+
+        ResultadoImportacion resultado = new ResultadoImportacion();
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(csvInputStream, StandardCharsets.UTF_8))) {
+
+            String linea;
+            int numeroLinea = 0;
+
+            while ((linea = reader.readLine()) != null) {
+                numeroLinea++;
+
+                // Saltar cabecera y lineas en blanco
+                if (numeroLinea == 1 || StringUtils.isBlank(linea)) {
+                    continue;
+                }
+
+                try {
+                    procesarLineaCsv(linea);
+                    resultado.registrarExito();
+                } catch (Exception ex) {
+                    log.warn("Error en linea {} del CSV: {}", numeroLinea, ex.getMessage());
+                    resultado.registrarError(numeroLinea, ex.getMessage());
+                }
+            }
+
+        } catch (Exception ex) {
+            log.error("Error leyendo el archivo CSV: {}", ex.getMessage());
+            throw new BusinessException("No se pudo leer el archivo CSV: " + ex.getMessage());
+        }
+
+        log.info("Importacion finalizada. Exitosos: {}, Errores: {}",
+                resultado.getExitosos(), resultado.getTotalErrores());
+        return resultado;
+    }
+
+    /**
+     * Procesa una linea individual del CSV y crea el producto.
+     * Lanza excepcion (capturada por el llamador) si la linea es invalida.
+     */
+    private void procesarLineaCsv(String linea) {
+        String[] campos = linea.split(",");
+
+        Preconditions.checkArgument(campos.length >= 7,
+                "Se esperaban 7 columnas (sku,nombre,categoria,precio_compra,"
+                + "precio_venta,stock_actual,stock_minimo)");
+
+        String sku = StringUtils.trimToEmpty(campos[0]);
+        String nombre = StringUtils.trimToEmpty(campos[1]);
+        String nombreCategoria = StringUtils.trimToEmpty(campos[2]);
+
+        Preconditions.checkArgument(StringUtils.isNotBlank(sku), "El SKU esta vacio");
+        Preconditions.checkArgument(StringUtils.isNotBlank(nombre), "El nombre esta vacio");
+        Preconditions.checkArgument(StringUtils.isNotBlank(nombreCategoria),
+                "La categoria esta vacia");
+
+        // Resolver la categoria por nombre (case-insensitive, solo activas)
+        Categoria categoria = categoriaRepository
+                .findByNombreIgnoreCaseAndActivoTrue(nombreCategoria)
+                .orElseThrow(() -> new BusinessException(
+                        "No existe la categoria activa: " + nombreCategoria));
+
+        // Parsear numeros (lanza excepcion si el formato es invalido)
+        BigDecimal precioCompra = parsearDecimal(campos[3], "precio_compra");
+        BigDecimal precioVenta = parsearDecimal(campos[4], "precio_venta");
+        int stockActual = parsearEntero(campos[5], "stock_actual");
+        int stockMinimo = parsearEntero(campos[6], "stock_minimo");
+
+        Producto producto = Producto.builder()
+                .sku(sku)
+                .nombre(nombre)
+                .categoria(categoria)
+                .precioCompra(precioCompra)
+                .precioVenta(precioVenta)
+                .stockActual(stockActual)
+                .stockMinimo(stockMinimo)
+                .build();
+
+        // Reutiliza la logica de creacion existente (valida SKU duplicado, normaliza)
+        crear(producto);
+    }
+
+    private BigDecimal parsearDecimal(String valor, String campo) {
+        try {
+            return new BigDecimal(StringUtils.trimToEmpty(valor));
+        } catch (NumberFormatException ex) {
+            throw new BusinessException("Valor invalido en " + campo + ": '" + valor + "'");
+        }
+    }
+
+    private int parsearEntero(String valor, String campo) {
+        try {
+            return Integer.parseInt(StringUtils.trimToEmpty(valor));
+        } catch (NumberFormatException ex) {
+            throw new BusinessException("Valor invalido en " + campo + ": '" + valor + "'");
+        }
     }
 }

@@ -28,4 +28,9 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
      * Lista las categorias activas (no eliminadas logicamente)
      */
     List<Categoria> findByActivoTrueOrderByNombreAsc();
+    /**
+     * Busca una categoria activa por su nombre, ignorando mayusculas/minusculas.
+     * Util para la importacion masiva desde CSV.
+     */
+    Optional<Categoria> findByNombreIgnoreCaseAndActivoTrue(String nombre);
 }
