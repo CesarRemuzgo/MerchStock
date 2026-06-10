@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Usuario - MerchStock</title>
@@ -27,6 +27,29 @@
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/ventas}">Ventas</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/reportes}">Reportes</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        <span sec:authentication="name">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <span class="dropdown-item-text small text-muted">
+                                <i class="bi bi-shield-check"></i> Sesion activa
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
