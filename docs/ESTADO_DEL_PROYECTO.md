@@ -1,272 +1,361 @@
-# 📊 Estado del Proyecto MerchStock - APF3
+# 📋 Estado del Proyecto MerchStock
 
-> **Documento vivo.** Se actualiza al cerrar cada módulo o sesión de trabajo.
-> Sirve como handoff entre sesiones, evidencia para el equipo y anexo del informe.
-
----
-
-## 🎯 Información del Proyecto
-
-| Item | Valor |
-|---|---|
-| **Curso** | Integrador I: Sistemas Software |
-| **Sección** | 27667 |
-| **Docente** | Mag. Marcos Teodoro Yerren Huima |
-| **Universidad** | Universidad Tecnológica del Perú (UTP) |
-| **Período** | 2026 |
-| **Grupo** | 3 |
-| **Entrega APF3** | 13 de junio de 2026 |
-| **Repositorio** | https://github.com/CesarRemuzgo/MerchStock |
-| **Rama de trabajo** | `develop` (default) |
-| **Rama protegida** | `main` (requiere 1 approval) |
+> **Sistema web de gestión de inventario para MerchStock Perú E.I.R.L.**
+> Avance de Proyecto Final 3 (APF3) - UTP 2026
 
 ---
 
-## 👥 Equipo
+## 🎯 Información General
 
-| Integrante | Rol | GitHub |
-|---|---|---|
-| Cesar Gabriel Remuzgo Angeles | Project Manager | @CesarRemuzgo ✅ |
-| Luis Fernando Alejos Pérez | Backend Lead | _Pendiente username_ |
-| Liz Anyeli Cueva Samillán | Analista / Documentación | _Pendiente username_ |
-| Daleth Correa Ángeles | Frontend / UX | @DalethCorreaAngeles ✅ |
-| Luis Ernesto Romani Villanueva | QA / DevOps | _Pendiente username_ |
+| Campo | Valor |
+|-------|-------|
+| **Curso** | Integrador I Sistemas Software, Sección 27667 |
+| **Universidad** | UTP (Universidad Tecnológica del Perú) |
+| **Profesor** | Mag. Marcos Yerren Huima |
+| **Grupo** | Grupo 3 |
+| **Cliente ficticio** | MerchStock Perú E.I.R.L. |
+| **Dirección cliente** | Av. Carlos Izaguirre 845, Los Olivos, Lima |
+| **Rubro** | Venta de merchandise (tazas, polos, gorras, llaveros, etc.) |
+| **Presupuesto** | S/15,000 (corregido por el profesor) |
+| **Alcance comprometido** | 15 de 22 RFs (estrategia conservadora 70%) |
+| **Fecha entrega APF3** | Viernes 13 de junio de 2026 |
 
 ---
 
-## 🏗️ Stack Tecnológico
+## 👥 Equipo Grupo 3
 
-- **Java:** 17.0.4 LTS
+| Nombre | Rol | GitHub |
+|--------|-----|--------|
+| Cesar Gabriel Remuzgo Ángeles | Project Manager | @CesarRemuzgo |
+| Luis Fernando Alejos Pérez | Backend Lead | (pendiente) |
+| Liz Anyeli Cueva Samillán | Analista/Documentación | (pendiente) |
+| Daleth Correa Ángeles | Frontend/UX | @DalethCorreaAngeles |
+| Luis Ernesto Romani Villanueva | QA/DevOps | (pendiente) |
+
+---
+
+## 🏗️ Stack Técnico
+
+### Backend
+- **Lenguaje:** Java 17.0.4 LTS
 - **Framework:** Spring Boot 3.5.14
-- **Build:** Maven
-- **BD:** MySQL 8 (BD: `merchstock_db`)
-- **ORM:** Spring Data JPA + Hibernate
-- **Vistas:** Thymeleaf + Bootstrap 5
-- **Seguridad:** Spring Security + BCrypt (configurado, login pendiente)
-- **IDE:** VS Code
-- **Versionado:** Git + GitHub + GitHub Desktop
+- **Build tool:** Maven
+- **Base de datos:** MySQL 8 (BD: `merchstock_db`)
+- **ORM:** Spring Data JPA / Hibernate
+- **Seguridad:** Spring Security + BCrypt (cost-factor 10)
 
-### Librerías de la rúbrica APF3 (4/4) ✅
+### Frontend
+- **Templating:** Thymeleaf
+- **CSS:** Bootstrap 5 (vía CDN)
+- **Iconos:** Bootstrap Icons (vía CDN)
+- **JS:** Vanilla JavaScript para carrito dinámico
 
-| Librería | Uso en el proyecto |
-|---|---|
-| Google Guava | `Preconditions.checkNotNull / checkArgument` en services |
-| Apache POI | En pom.xml, listo para reportes Excel (pendiente implementar) |
-| Apache Commons Lang | `StringUtils.isNotBlank / isBlank` en services |
-| Logback | `@Slf4j` en services y controllers + `logback-spring.xml` personalizado |
+### Herramientas
+- **IDE:** VS Code (consensuado por equipo)
+- **Control de versiones:** Git + GitHub
+- **Paleta de colores:** Navy `#1F3864`, Steel Blue `#4472C4`, Teal `#2E8B7A`
+- **IGV peruano:** 18%
 
----
+### Librerías de Apoyo (Rúbrica APF3)
+Las 4 librerías exigidas por la rúbrica están USÁNDOSE EN CÓDIGO:
 
-## 📦 Módulos Implementados
-
-### ✅ Completados y funcionales
-
-| Módulo | RFs cubiertos | Pantallas |
-|---|---|---|
-| **Home** | Vista principal | `/` |
-| **Productos CRUD** | RF05, RF06, RF07, RF08 | `/productos`, `/productos/nuevo`, `/productos/{id}/editar`, `/productos/{id}/eliminar` |
-| **Alertas de stock** | RF15 | `/productos/alertas` |
-| **Categorías CRUD** | Gestión maestra | `/categorias` (5 endpoints) |
-| **Clientes CRUD** | RF gestión clientes | `/clientes` (5 endpoints, soporta DNI/RUC/CE/PASAPORTE) |
-
-**Total RFs cubiertos: ~5-6 de 22.**
-
-### ⏳ Pendientes (orden recomendado)
-
-1. **Módulo Usuarios CRUD** (45 min) — Manejo de roles ADMIN/VENDEDOR
-2. **Módulo Ventas** ⭐ (90 min) — El más crítico. Aplica defensa en 3 capas con `reducirStock()`
-3. **Reportes con Apache POI** (45 min) — Exportar productos a Excel
-4. **Login real con BCrypt + roles** (60 min) — Reemplaza el acceso libre temporal
-5. _(Opcional)_ Dashboard con estadísticas, importar CSV con Apache Commons
-
-**Meta final:** cubrir 15 de 22 RFs (~70% del alcance).
+| Librería | Uso real |
+|----------|----------|
+| ✅ **Google Guava 33.3.1** | `Preconditions.checkNotNull/checkArgument` en services |
+| ✅ **Apache POI 5.3.0** | `XSSFWorkbook` para generación de reportes Excel |
+| ✅ **Apache Commons Lang 3.17.0** | `StringUtils.isBlank/isNotBlank` en services |
+| ✅ **Logback (vía Spring)** | `@Slf4j` + `logback-spring.xml` con 3 appenders |
 
 ---
 
-## 🗄️ Base de Datos
+## 📦 Repositorio
 
-Scripts en `database/`:
-- `01-schema.sql` — Crea BD y 7 tablas con constraints
-- `02-seed-data.sql` — Inserta 4 usuarios, 8 categorías, 16 productos
+| Campo | Valor |
+|-------|-------|
+| **URL** | https://github.com/CesarRemuzgo/MerchStock |
+| **Visibilidad** | Público |
+| **Licencia** | MIT |
+| **Rama principal** | `main` (protegida con 1 approval) |
+| **Rama de trabajo** | `develop` (default) |
+| **Ruta local** | `F:\GitHub\MerchStock` |
 
-### Tablas (7)
-
-1. `usuarios` (4 registros seed)
-2. `categorias` (8 registros seed: Tazas, Polos, Gorras, Llaveros, Tomatodos, Lapiceros, Bolsas Ecologicas, Lanyards)
-3. `productos` (16 registros seed con SKUs TAZ-001..LAN-002)
-4. `clientes` (3 registros creados manualmente)
-5. `ventas` (vacía)
-6. `venta_detalle` (vacía)
-7. `auditoria_stock` (vacía)
-
-### Defensa en 3 capas para stock no negativo
-- **Capa SQL:** `CHECK (stock_actual >= 0)` en tabla productos
-- **Capa Java/Bean Validation:** `@Min(0)` en entity Producto
-- **Capa Service:** validación en `ProductoServiceImpl.reducirStock()` con `BusinessException`
+### Configuración de seguridad del repo
+- ✅ 2FA habilitado en cuenta Cesar
+- ✅ `application.properties` en .gitignore
+- ✅ `application-example.properties` como plantilla para el equipo
+- ✅ Directorio `/logs/` en .gitignore
+- ✅ `/target/` en .gitignore
 
 ---
 
-## 🏛️ Arquitectura
-src/main/java/com/merchstock/app/
-├── config/        → SecurityConfig (acceso libre temporal + BCrypt bean)
-├── controller/    → HomeController, ProductoController, CategoriaController, ClienteController
-├── entity/        → 7 entities JPA (Categoria, Usuario, Cliente, Producto, Venta, VentaDetalle, AuditoriaStock)
-├── repository/    → 7 repositories Spring Data JPA
-├── service/       → Interfaces (ProductoService, CategoriaService, ClienteService)
-│   └── impl/      → Implementaciones (SOLID: Interface Segregation + Dependency Inversion)
-├── exception/     → ResourceNotFoundException, BusinessException
-├── dto/           → (vacío por ahora)
-└── util/          → (vacío por ahora)
+## ✅ Módulos Implementados (7 completos)
 
-### Patrones aplicados ✅
-- **MVC:** Controller → Service → Repository → Entity → View
-- **DAO:** Spring Data JPA con `JpaRepository`
-- **SOLID:** Interface Segregation (interfaces + impl) + Dependency Inversion (constructor injection con `@RequiredArgsConstructor`)
+### 1. Home Dashboard
+- Pantalla principal con cards de acceso rápido
+- Contador de alertas de stock bajo
+- Navbar con 7 enlaces consistentes en todo el sistema
+
+### 2. Productos CRUD + Alertas (RF15)
+- Lista con buscador
+- Crear, editar, eliminar lógico
+- Vista de alertas de stock bajo
+- Validaciones de stock no negativo
+
+### 3. Categorías CRUD
+- Lista, crear, editar, eliminar lógico
+- Validación de nombre duplicado
+
+### 4. Clientes CRUD
+- Tipos de documento: DNI, RUC, CE, PASAPORTE
+- Reactivación automática al editar cliente inactivo
+- Validación de documento duplicado
+- 3 clientes de prueba creados
+
+### 5. Usuarios CRUD con BCrypt
+- Encriptación BCrypt cost-factor 10 (estándar OWASP)
+- Roles diferenciados: ADMIN (rojo) y VENDEDOR (azul)
+- Validación de password mínimo 6 caracteres
+- Edición sin perder password actual (campo vacío = mantener)
+- 5 usuarios activos en el sistema
+
+### 6. Ventas Transaccional ⭐ (Módulo crítico)
+- Carrito dinámico con JavaScript
+- Cálculo automático de IGV (18%) en tiempo real
+- Generación automática de código único: `VTA-YYYY-NNNN`
+- **Defensa en 3 capas para stock no negativo:**
+  - Capa SQL: `CHECK (stock_actual >= 0)`
+  - Capa Java: `@Min(0)` en entity
+  - Capa Service: `BusinessException` antes del save
+- Auditoría automática en tabla `auditoria_stock`
+- Anulación de venta con reversa automática de stock
+- `@Transactional` para atomicidad completa
+- Venta de prueba registrada: VTA-2026-0001 (S/123.90)
+
+### 7. Reportes Excel con Apache POI
+- 3 reportes disponibles:
+  - `/reportes/productos` - Listado completo
+  - `/reportes/stock-bajo` - Alertas RF15
+  - `/reportes/ventas` - Historial RF19-20
+- Formato `.xlsx` (Excel 2007+ / OpenXML)
+- Estilos personalizados: titulo navy, headers blanco/navy
+- Auto-ajuste de columnas
+- Streaming binario con `Content-Disposition: attachment`
+- Nombres con fecha: `MerchStock_TIPO_YYYYMMDD.xlsx`
+
+### 8. Autenticación + Roles (Spring Security) 🔐
+- **CustomUserDetailsService** conecta MySQL con Spring Security
+- **BCryptPasswordEncoder** cost-factor 10
+- **DaoAuthenticationProvider**
+- Vista de login bonita con gradient azul-teal
+- Vista de Acceso Denegado (403) personalizada
+- Dropdown de usuario en navbar de todas las vistas
+- Logout con confirmación visual
+- Sesión HTTP de 1 sesión por usuario
+- Manejo de sesión expirada
+- Auditoría de logins en logs
+
+**Reglas de acceso (RBAC):**
+
+| Módulo | ADMIN | VENDEDOR |
+|--------|-------|----------|
+| Home | ✅ | ✅ |
+| Productos (ver) | ✅ | ✅ |
+| Productos (crear/editar/eliminar) | ✅ | ❌ |
+| Categorías | ✅ | ❌ |
+| Clientes | ✅ | ✅ |
+| Usuarios | ✅ | ❌ |
+| Ventas | ✅ | ✅ |
+| Reportes | ✅ | ✅ |
+| Alertas | ✅ | ✅ |
 
 ---
 
-## 🎨 UI/UX
+## 🔑 Credenciales de Prueba
 
-- **Paleta:** Navy `#1F3864`, Steel Blue `#4472C4`, Teal `#2E8B7A`
-- **Framework CSS:** Bootstrap 5 vía CDN
-- **Iconos:** Bootstrap Icons
-- **Navbar consistente** en todas las vistas: Productos | Categorias | Clientes | Alertas
-- **Mensajes flash** con `RedirectAttributes` (verde éxito, rojo error)
-- **Footer global** con info del grupo
+Todos los usuarios tienen hash BCrypt real (verificado en MySQL):
 
----
-
-## 📝 Commits realizados (en `develop`)
-
-1. Initial commit
-2. Update README.md (info del equipo)
-3. docs: agregar guia de contribucion del equipo
-4. feat: agregar esqueleto Spring Boot con dependencias APF3
-5. feat: implementar modulo de productos completo con MVC, DAO y SOLID
-6. docs: agregar scripts SQL e instrucciones de instalacion local
-7. feat: agregar modulo categorias CRUD y personalizar Logback
-8. feat: agregar modulo clientes CRUD con tipos de documento
+| Username | Password | Rol |
+|----------|----------|-----|
+| `admin` | `Admin2026` | ADMIN |
+| `cremuzgo` | `Cesar2026` | ADMIN |
+| `pventa1` | `Patricia2026` | VENDEDOR |
+| `avendedor` | `Andrea2026` | VENDEDOR |
+| `falejos` | `BackEnd2026` | ADMIN |
 
 ---
 
-## 🔐 Configuración local (no en repo)
+## 📊 Métricas del Proyecto
 
-### `application.properties` (ignorado por Git)
-- `spring.datasource.password=` ← password local de MySQL
-- `spring.jpa.hibernate.ddl-auto=validate`
-- `spring.jpa.open-in-view=false`
-- `spring.thymeleaf.cache=false`
-
-### Plantilla compartida en repo
-- `application-example.properties` → para que el equipo lo copie y configure su password
-
----
-
-## ⚠️ Decisiones técnicas importantes
-
-1. **`open-in-view=false`** (mejor práctica) requiere manejo explícito de fetching. La relación `Producto → Categoria` está como `FetchType.EAGER` para evitar `LazyInitializationException` en vistas Thymeleaf.
-
-2. **Eliminación lógica** en todos los módulos (no DELETE físico). Campo `activo = false`.
-
-3. **SKU normalizado a mayúsculas** en `ProductoService.crear()`.
-
-4. **`@Transactional(readOnly = true)`** por defecto en services; se sobreescribe con `@Transactional` para operaciones de escritura.
-
-5. **Password BCrypt** en `usuarios.password_hash` — el hash actual en seed-data NO corresponde a "admin123" real, se debe actualizar al implementar login real.
+| Métrica | Valor |
+|---------|-------|
+| Pantallas funcionales | 14+ |
+| Módulos completos | 7 |
+| RFs cubiertos | ~12 de 22 (~55%) |
+| Líneas de código Java | ~2500+ |
+| Tablas en BD | 7 con constraints e índices |
+| Commits en develop | 10+ |
+| Patrones aplicados | MVC, DAO, SOLID, RBAC, Defense in Depth |
 
 ---
 
-## 🐛 Errores resueltos durante el desarrollo
+## 🎯 Proyección de Nota APF3
 
-| Error | Causa | Solución |
-|---|---|---|
-| `illegal character: '\ufeff'` | BOM en `package-info.java` por PowerShell `Out-File -Encoding UTF8` | Eliminar los 9 `package-info.java` (las carpetas ya tienen archivos reales) |
-| `LazyInitializationException` en Categoria | `open-in-view=false` + LAZY fetch en relación | Cambiar `FetchType.LAZY` por `FetchType.EAGER` en Producto.categoria |
-| `Unable to access property 'stockBajo'` en Thymeleaf | Ambigüedad con getter `isStockBajo()` (`@Transient boolean`) | Reemplazar `${prod.stockBajo}` por `${prod.stockActual <= prod.stockMinimo}` |
-| `Failed to create converter for [%clr]` en Logback | Falta importar defaults de Spring Boot | Agregar `<include resource="org/springframework/boot/logging/logback/defaults.xml"/>` |
+| Criterio | Max | Actual | Meta |
+|----------|-----|--------|------|
+| Diseño solución (MVC+DAO+SOLID+Seguridad) | 3 | 3/3 ✅ | 3/3 |
+| Uso recursos Java (4 librerías) | 2 | 2/2 ✅ | 2/2 |
+| Control versiones | 3 | 2.5/3 | 3/3 |
+| Interfaces gráficas (100% alcance) | 6 | ~5/6 | 6/6 |
+| Construcción producto final | 4 | 3.5/4 | 4/4 |
+| Sustentación oral | 2 | 0/2 ⏳ | 2/2 |
+| **TOTAL** | **20** | **~16/20** | **18-20/20** |
 
 ---
 
-## 🚀 Cómo retomar el desarrollo
+## 📅 Cronograma APF3
 
-### Pre-requisitos
-- MySQL Server corriendo (servicio MySQL80 en Windows)
-- VS Code abierto en `F:\GitHub\MerchStock`
-- Java 17 disponible
+### ✅ COMPLETADO
 
-### Arrancar el proyecto
+**Sesión 1 (sábado 7/jun):** Setup + Productos CRUD
+- Configuración inicial del repo
+- Spring Boot generado
+- BD MySQL con 7 tablas
+- Módulo Productos completo
+
+**Sesión 2 (domingo 8/jun):** Clientes + Usuarios + Ventas
+- Módulo Clientes CRUD
+- Módulo Usuarios CRUD con BCrypt
+- Módulo Ventas transaccional con defensa en 3 capas
+- Auditoría de stock
+
+**Sesión 3 (lunes 9/jun):** Reportes + Login
+- Módulo Reportes Excel con Apache POI (cierra las 4 librerías)
+- Módulo Login + Roles con Spring Security
+- 21 archivos en último commit
+
+### ⏳ PENDIENTE
+
+**Martes 10/jun (2.5 horas):**
+- Tests unitarios TDD (45 min)
+- Dashboard con estadísticas (30 min)
+- Importar productos desde CSV con Apache Commons (45 min)
+- Generar Javadoc HTML con `.\mvnw javadoc:javadoc` (15 min)
+- Coordinar commits del equipo (30 min)
+
+**Miércoles 11/jun (3 horas):**
+- Informe Word APF3 (90 min)
+- PowerPoint ~12 slides (90 min)
+
+**Jueves 12/jun (2 horas):**
+- Ensayar exposición con el equipo (60 min)
+- Asegurar commits de todos los miembros (30 min)
+- Pulir detalles (30 min)
+
+**Viernes 13/jun:** SUSTENTACIÓN ORAL (~10 min total, todos exponemos)
+
+---
+
+## 🧠 Decisiones Importantes Ya Tomadas
+
+### ❌ NO REVERTIR
+- ❌ Presupuesto NO es S/37,000 ni S/6,856.50 → es **S/15,000**
+- ❌ No usar PowerShell con `Out-File -Encoding UTF8` para crear `.java` (mete BOM)
+- ❌ No crear archivos `package-info.java` (problemáticos, innecesarios)
+- ❌ No revertir relaciones EAGER a LAZY en Venta, VentaDetalle, Producto.categoria
+
+### ✅ ADOPTADO
+- ✅ MVC + DAO + SOLID (TDD opcional pero deseable como diferenciador)
+- ✅ Eliminación lógica (`activo = false`) en todos los CRUDs
+- ✅ Lombok `@RequiredArgsConstructor` + `@Slf4j` en services
+- ✅ Bootstrap 5 vía CDN + Bootstrap Icons
+- ✅ Estilos standalone en cada vista (no fragments, por simplicidad)
+- ✅ Navbar consistente con 7 enlaces en todas las vistas
+- ✅ Dropdown de usuario a la derecha en navbar
+- ✅ Footer: `© 2026 MerchStock - APF3 - Grupo 3 - UTP 2026`
+
+---
+
+## 🐛 Bugs Resueltos en el Proceso
+
+| # | Problema | Solución |
+|---|----------|----------|
+| 1 | `LazyInitializationException` en Cliente al ver detalle de venta | Cambiar `FetchType.LAZY` → `EAGER` en Venta.cliente, Venta.usuario, VentaDetalle.producto |
+| 2 | BOM character en archivos `.java` creados con PowerShell | Usar `New-Item` en lugar de `Out-File -Encoding UTF8` |
+| 3 | Bug en `renderCarrito()` JS: mensaje vacío que se borraba | Regenerar mensaje vacío en el HTML del container, no usar variable |
+| 4 | Dropdown de usuario no abría en navbar | Faltaba `<script src="...bootstrap.bundle.min.js"></script>` en algunas vistas |
+| 5 | `BusinessException` no detectaba stock insuficiente | Validación explícita en service ANTES de `save()` |
+
+---
+
+## 🔧 Comandos Útiles
+
+### Arrancar el sistema
 ```powershell
 cd F:\GitHub\MerchStock
 .\mvnw spring-boot:run
 ```
 
-Verificar en navegador: `http://localhost:8080`
+### Limpiar y recompilar
+```powershell
+.\mvnw clean install -DskipTests
+```
 
-### URLs disponibles
-- `/` — Home
-- `/productos` — Lista de productos
-- `/productos/nuevo` — Nuevo producto
-- `/productos/alertas` — Alertas de stock
-- `/categorias` — Lista de categorías
-- `/clientes` — Lista de clientes
+### Generar Javadoc HTML
+```powershell
+.\mvnw javadoc:javadoc
+# Salida: target/site/apidocs/
+```
 
----
-
-## 📅 Próximos pasos (siguiente sesión)
-
-1. ⏳ **Módulo Usuarios CRUD** (Opción A: password editable en texto plano, encriptado con BCrypt al guardar)
-2. ⏳ **Módulo Ventas** ⭐ — registro de venta con descuento atómico de stock
-3. ⏳ **Reportes Apache POI** — exportar productos a Excel
-4. ⏳ **Login real con BCrypt**
+### Verificar dependencias
+```powershell
+.\mvnw dependency:tree
+```
 
 ---
 
-## 📊 Puntaje proyectado en este momento
+## 🎓 Conceptos Clave para la Sustentación
 
-| Criterio | Max | Proyección actual |
-|---|---|---|
-| Diseño de la solución | 3 | 3 / 3 ✅ |
-| Uso de recursos Java (4 librerías) | 2 | 2 / 2 ✅ |
-| Control de versiones | 3 | 2.5 / 3 (falta más actividad del equipo) |
-| Interfaces gráficas | 6 | ~3 / 6 (5-6 RFs cubiertos) |
-| Construcción del producto | 4 | 3 / 4 |
-| Sustentación oral | 2 | Pendiente |
+### Defensa en 3 Capas (Stock no negativo)
+```
+Capa 1 (BD):      CHECK (stock_actual >= 0)
+Capa 2 (Java):    @Min(0) en entity Producto.stockActual
+Capa 3 (Service): validación explícita + BusinessException antes del save
+```
 
-**Subtotal estimado actual: ~13.5 / 20**
-**Meta proyectada al cierre: 17-18 / 20**
+### Transaccionalidad
+`@Transactional` en `registrarVenta()` garantiza atomicidad:
+si falla cualquier paso, se hace rollback de TODA la operación
+(stock reducido, venta guardada, auditoría) - no quedan estados parciales.
+
+### Seguridad BCrypt
+Función hash unidireccional con cost-factor 10 = 1024 iteraciones.
+NUNCA se desencripta. Spring Security compara el password ingresado
+encriptado vs el hash almacenado.
+
+### RBAC (Role-Based Access Control)
+Cada usuario tiene un rol (ADMIN o VENDEDOR). Las URLs están
+mapeadas a roles específicos en `SecurityConfig`. Aplica el principio
+de mínimo privilegio.
+
+### MVC + DAO + SOLID
+- **MVC:** Controller → Service → Repository → Entity → View
+- **DAO:** Spring Data JPA con 7 Repositories que extienden JpaRepository
+- **SOLID:**
+  - SRP: cada clase tiene una responsabilidad
+  - OCP: extensible vía interfaces
+  - LSP: implementaciones intercambiables
+  - ISP: interfaces específicas (no fat interfaces)
+  - DIP: Controllers dependen de Service interfaces, no de impls
 
 ---
+
+## 📞 Contacto y Soporte
+
+**Project Manager:** Cesar Gabriel Remuzgo Ángeles
+**Email:** u18208011@utp.edu.pe
+**GitHub:** @CesarRemuzgo
+
 ---
 
-## 📅 Sesión 2 - 8 de junio de 2026
-
-Avance significativo: 3 módulos completos en una sesión.
-
-### Implementado hoy:
-- ✅ **Módulo Clientes CRUD** — tipos DNI/RUC/CE/PASAPORTE, reactivación automática
-- ✅ **Módulo Usuarios CRUD** — encriptación BCrypt en passwords, manejo de roles ADMIN/VENDEDOR
-- ✅ **Módulo Ventas transaccional** ⭐ — el módulo más complejo:
-  - Carrito dinámico con JavaScript
-  - Cálculo automático de IGV (18%)
-  - Generación de código único `VTA-YYYY-NNNN`
-  - Defensa en 3 capas para stock (SQL + Java + Service)
-  - Anulación con reversa automática de stock
-  - Auditoría completa de movimientos
-
-### Lecciones aprendidas:
-- `FetchType.LAZY` causa problemas con `open-in-view=false` en vistas Thymeleaf
-  → Solución: EAGER para relaciones que se renderizan siempre
-- Validación del lado cliente (JS) es UX, NO es seguridad
-  → El service debe validar siempre (capa 3 de defensa)
-- Los DTOs separan la capa de presentación de la capa de persistencia
-  → Evitan que el cliente envíe precios manipulados
-
-### RFs cubiertos: 10 de 22 (~45%)
-
-### Próximos pasos:
-1. Reportes con Apache POI (exportar a Excel)
-2. Login real con BCrypt + control de roles
-3. Coordinación con el equipo: invitar a Luis, Liz y Luis como collaborators
-
-_Última actualización: [08/06/2026]_
-_Mantenido por: Cesar Remuzgo (PM)_
+_Última actualización: 9 de junio de 2026, 23:00 horas_
+_Próxima sesión planificada: martes 10 de junio, mañana_
