@@ -177,7 +177,7 @@
                             <span id="totalItems">0</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Subtotal:</span>
+                            <span>Op. Gravada:</span>
                             <span>S/ <span id="subtotalDisplay">0.00</span></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
@@ -341,14 +341,16 @@
     }
 
     // 6. ACTUALIZAR TOTALES
+    // Los precios YA INCLUYEN IGV: el total es la suma de subtotales y se
+    // desglosa la operacion gravada dividiendo entre (1 + IGV_RATE).
     function actualizarTotales() {
         const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
-        const subtotal = carrito.reduce((sum, item) => sum + item.subtotal, 0);
-        const igv = subtotal * IGV_RATE;
-        const total = subtotal + igv;
+        const total = carrito.reduce((sum, item) => sum + item.subtotal, 0);
+        const opGravada = total / (1 + IGV_RATE);
+        const igv = total - opGravada;
 
         document.getElementById('totalItems').textContent = totalItems;
-        document.getElementById('subtotalDisplay').textContent = subtotal.toFixed(2);
+        document.getElementById('subtotalDisplay').textContent = opGravada.toFixed(2);
         document.getElementById('igvDisplay').textContent = igv.toFixed(2);
         document.getElementById('totalDisplay').textContent = total.toFixed(2);
 

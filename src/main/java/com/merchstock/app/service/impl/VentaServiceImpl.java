@@ -212,15 +212,21 @@ public class VentaServiceImpl implements VentaService {
                     producto.getNombre(), itemForm.getCantidad(), subtotalLinea);
         }
 
-        // 5. CALCULAR IGV (18%) Y TOTAL
-        BigDecimal igv = subtotalGeneral
-                .multiply(IGV_FACTOR)
+        // 5. DESGLOSAR IGV (18%) DESDE EL TOTAL
+        // Los precios de venta YA INCLUYEN IGV, por lo que el total es la suma
+        // de los subtotales y la operacion gravada se obtiene dividiendo entre 1.18.
+        
+        BigDecimal total = subtotalGeneral
                 .setScale(ESCALA_DECIMAL, RoundingMode.HALF_UP);
 
-        BigDecimal total = subtotalGeneral.add(igv)
-                .setScale(ESCALA_DECIMAL, RoundingMode.HALF_UP);
+        BigDecimal divisor = BigDecimal.ONE.add(IGV_FACTOR); // 1.18
+        BigDecimal opGravada = total
+                .divide(divisor, ESCALA_DECIMAL, RoundingMode.HALF_UP);
 
-        venta.setSubtotal(subtotalGeneral);
+        // El IGV es la diferencia, para que opGravada + igv == total exacto al centimo
+        BigDecimal igv = total.subtract(opGravada);
+
+        venta.setSubtotal(opGravada);  // el campo 'subtotal' ahora almacena la OPERACION GRAVADA
         venta.setIgv(igv);
         venta.setTotal(total);
 
