@@ -24,7 +24,7 @@ VENDEDOR) y un panel de control con estadísticas en tiempo real.
 | Rol | Integrante | GitHub |
 |---|---|---|
 | Project Manager | Cesar Remuzgo Ángeles | @CesarRemuzgo |
-| Backend Lead | Luis Fernando Alejos Pérez | @pendiente |
+| Backend Lead | Luis Fernando Alejos Pérez | @Luis-1bit |
 | Analista / Docs | Liz Anyeli Cueva Samillán | @pendiente |
 | Frontend / UX | Daleth Correa Ángeles | @DalethCorreaAngeles |
 | QA / DevOps | Luis Ernesto Romani Villanueva | @pendiente |
