@@ -75,10 +75,11 @@ class VentaServiceImplTest {
         // --- Act ---
         Venta venta = ventaService.registrarVenta(form);
 
-        // --- Assert: calculo monetario (50.00 x 2 = 100.00 + 18% IGV) ---
-        assertThat(venta.getSubtotal()).isEqualByComparingTo("100.00");
-        assertThat(venta.getIgv()).isEqualByComparingTo("18.00");
-        assertThat(venta.getTotal()).isEqualByComparingTo("118.00");
+        // --- Assert: calculo monetario (precio YA incluye IGV) ---
+        // 50.00 x 2 = 100.00 total. Op. gravada = 100/1.18 = 84.75; IGV = 100 - 84.75 = 15.25
+        assertThat(venta.getTotal()).isEqualByComparingTo("100.00");
+        assertThat(venta.getSubtotal()).isEqualByComparingTo("84.75");
+        assertThat(venta.getIgv()).isEqualByComparingTo("15.25");
 
         // --- Assert: codigo y estado ---
         assertThat(venta.getCodigoVenta()).matches("VTA-\\d{4}-0001");
