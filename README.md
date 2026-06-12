@@ -27,7 +27,7 @@ VENDEDOR) y un panel de control con estadísticas en tiempo real.
 | Backend Lead | Luis Fernando Alejos Pérez | @Luis-1bit |
 | Analista / Docs | Liz Anyel Cueva Samillán | @pendiente |
 | Frontend / UX | Daleth Correa Ángeles | @DalethCorreaAngeles |
-| QA / DevOps | Luis Ernesto Romani Villanueva | @pendiente |
+| QA / DevOps | Luis Ernesto Romani Villanueva | @LuisErnestoRomani |
 
 > 👋 **¿Eres del equipo?** Lee [`CONTRIBUTING.md`](CONTRIBUTING.md) para saber
 > cómo hacer tu aporte al repositorio paso a paso.
