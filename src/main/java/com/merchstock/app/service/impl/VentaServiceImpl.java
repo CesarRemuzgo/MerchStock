@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,6 +38,7 @@ import java.util.List;
 @Slf4j
 @Transactional(readOnly = true)
 public class VentaServiceImpl implements VentaService {
+    private static final Logger NEGOCIO = LoggerFactory.getLogger("NEGOCIO");
 
     // IGV peruano - configurable si en el futuro cambia
     private static final BigDecimal IGV_FACTOR = new BigDecimal("0.18");
@@ -234,6 +237,8 @@ public class VentaServiceImpl implements VentaService {
         Venta ventaGuardada = ventaRepository.save(venta);
 
         log.info("Venta registrada exitosamente. Codigo: {}, Total: S/{}",
+                ventaGuardada.getCodigoVenta(), ventaGuardada.getTotal());
+        NEGOCIO.info("VENTA_REGISTRADA codigo={} total={}",
                 ventaGuardada.getCodigoVenta(), ventaGuardada.getTotal());
 
         return ventaGuardada;

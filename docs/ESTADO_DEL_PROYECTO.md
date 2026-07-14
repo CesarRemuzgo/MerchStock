@@ -1,7 +1,7 @@
 # 📋 Estado del Proyecto MerchStock
 
 > **Sistema web de gestión de inventario para MerchStock Perú E.I.R.L.**
-> Avance de Proyecto Final 3 (APF3) - UTP 2026
+> **PROYECTO FINAL** — Semana 18 · UTP 2026
 
 ---
 
@@ -18,7 +18,13 @@
 | **Rubro** | Venta de merchandise (tazas, polos, gorras, llaveros, etc.) |
 | **Presupuesto** | S/15,000 (corregido por el profesor) |
 | **Alcance comprometido** | 15 de 22 RFs (estrategia conservadora 70%) |
-| **Fecha entrega APF3** | Viernes 13 de junio de 2026 |
+| **Entrega APF3** | ✅ Viernes 13 de junio de 2026 (COMPLETADA) |
+| **SUSTENTACIÓN FINAL** | 🔴 **Sábado 25 de julio de 2026** |
+
+> ⚠️ **PENDIENTE DE UNIFICAR:** el Informe APF3 declara **15 de 22 RF** cubiertos,
+> pero este documento y el PPT dicen **~14 de 22**. Antes de la entrega final hay
+> que verificar el número real y dejarlo idéntico en el informe, el PPT y aquí.
+> La rúbrica califica **coherencia entre documentación y código**.
 
 ---
 
@@ -27,13 +33,28 @@
 | Nombre | Rol | GitHub |
 |--------|-----|--------|
 | Cesar Gabriel Remuzgo Ángeles | Project Manager | @CesarRemuzgo |
-| Luis Fernando Alejos Pérez | Backend Lead | (pendiente) |
-| Liz Anyeli Cueva Samillán | Analista/Documentación | (pendiente) |
+| Luis Fernando Alejos Pérez | Backend Lead | @Luis-1bit |
+| Liz Anyeli Cueva Samillán | Analista/Documentación | @LizAnyel / @AnyelCueva |
 | Daleth Correa Ángeles | Frontend/UX | @DalethCorreaAngeles |
-| Luis Ernesto Romani Villanueva | QA/DevOps | (pendiente) |
+| Luis Ernesto Romani Villanueva | QA/DevOps | @LuisErnestoRomani |
 
-> 📌 **Equipo:** revisen [`CONTRIBUTING.md`](../CONTRIBUTING.md) para saber cómo
-> hacer su aporte al repositorio paso a paso.
+---
+
+## 🏆 RÚBRICA DEL PROYECTO FINAL (20 pts) — Estado actual
+
+| Criterio | Puntos | Estado | Qué falta |
+|----------|--------|--------|-----------|
+| **Pruebas de software y seguridad** | 2 | 🟡 50% | Tests ✅ · Falta **reporte de pruebas de seguridad (OWASP ZAP)** con observaciones levantadas |
+| **Despliegue del proyecto** | 2 | 🔴 0% | Empaquetado Maven, configuración de servidor y **Plan de Despliegue** |
+| **Monitoreo del proyecto** | 6 | 🟡 En curso | Actuator + health/metrics + logs + **Plan de Monitoreo** |
+| **Mantenimiento del proyecto** | 5 | 🔴 0% | Cron jobs, backups, scripts y **Plan de Mantenimiento** |
+| **Construcción del producto final** | 3 | 🟢 ~100% | Completo, coherente, buenas prácticas y autoría ✅ |
+| **Sustentación oral** | 2 | ⚪ Pendiente | Preparar PPT final y guion (todos exponen, ~10 min) |
+| **TOTAL** | **20** | **~5.5 / 20** | 🚨 **13 pts dependen de trabajo aún no iniciado** |
+
+> 🚨 **PRIORIDAD MÁXIMA:** Monitoreo (6) + Mantenimiento (5) = **11 puntos**.
+> Son los rubros de mayor peso y los menos avanzados. La mayor parte es
+> **configuración + documentación**, no reprogramar el sistema.
 
 ---
 
@@ -47,28 +68,34 @@
 - **ORM:** Spring Data JPA / Hibernate
 - **Seguridad:** Spring Security + BCrypt (cost-factor 10)
 - **Testing:** JUnit 5 + Mockito
+- **Monitoreo:** Spring Boot Actuator + Micrometer *(en implementación)*
 
 ### Frontend
 - **Templating:** Thymeleaf
-- **CSS:** Bootstrap 5 (vía CDN)
-- **Iconos:** Bootstrap Icons (vía CDN)
+- **CSS:** Bootstrap 5 (vía CDN) · **Iconos:** Bootstrap Icons
 - **JS:** Vanilla JavaScript para carrito dinámico
 
-### Herramientas
-- **IDE:** VS Code (consensuado por equipo)
-- **Control de versiones:** Git + GitHub
-- **Paleta de colores:** Navy `#1F3864`, Steel Blue `#4472C4`, Teal `#2E8B7A`
-- **IGV peruano:** 18%
+### Estructura de paquetes
+```
+com.merchstock.app
+├── config       (SecurityConfig)
+├── controller
+├── entity       ← las entidades viven aquí (NO en 'model')
+├── repository
+├── service
+│   └── impl
+├── monitoreo    ← nuevo (Actuator)
+└── util
+```
 
-### Librerías de Apoyo (Rúbrica APF3)
-Las 4 librerías exigidas por la rúbrica están USÁNDOSE EN CÓDIGO:
+### Librerías de Apoyo (exigidas por rúbrica)
 
 | Librería | Uso real |
 |----------|----------|
 | ✅ **Google Guava 33.3.1** | `Preconditions.checkNotNull/checkArgument` en services |
-| ✅ **Apache POI 5.3.0** | `XSSFWorkbook` para generación de reportes Excel |
-| ✅ **Apache Commons Lang 3.17.0** | `StringUtils.isBlank/isNotBlank/trimToEmpty` en services e importación CSV |
-| ✅ **Logback (vía Spring)** | `@Slf4j` + `logback-spring.xml` con 3 appenders |
+| ✅ **Apache POI 5.3.0** | `XSSFWorkbook` para reportes Excel |
+| ✅ **Apache Commons Lang 3.17.0** | `StringUtils` en services e importación CSV |
+| ✅ **Logback (vía Spring)** | `@Slf4j` + `logback-spring.xml` |
 
 ---
 
@@ -77,125 +104,127 @@ Las 4 librerías exigidas por la rúbrica están USÁNDOSE EN CÓDIGO:
 | Campo | Valor |
 |-------|-------|
 | **URL** | https://github.com/CesarRemuzgo/MerchStock |
-| **Visibilidad** | Público |
-| **Licencia** | MIT |
+| **Visibilidad** | Público · Licencia MIT |
 | **Rama principal** | `main` (protegida con 1 approval) |
 | **Rama de trabajo** | `develop` (default) |
 | **Ruta local** | `F:\GitHub\MerchStock` |
-
-### Configuración de seguridad del repo
-- ✅ 2FA habilitado en cuenta Cesar
-- ✅ `application.properties` en .gitignore
-- ✅ `application-example.properties` como plantilla para el equipo
-- ✅ Directorio `/logs/` en .gitignore
-- ✅ `/target/` en .gitignore
 
 ---
 
 ## ✅ Módulos Implementados (10 completos)
 
-### 1. Home Dashboard ⭐ (actualizado)
-- Panel de control con 4 tarjetas de estadísticas en tiempo real:
-  total de productos, alertas de stock bajo, ventas del día, ingresos del día
-- Tabla de últimas ventas registradas con estado
-- Navbar con 7 enlaces consistentes en todo el sistema
+1. **Home Dashboard** — 4 tarjetas de estadísticas en tiempo real + tabla de últimas ventas
+2. **Productos CRUD + Alertas (RF15)** — buscador, eliminación lógica, alertas de stock bajo
+3. **Categorías CRUD** — validación de nombre duplicado
+4. **Clientes CRUD** — DNI/RUC/CE/PASAPORTE, reactivación automática
+5. **Usuarios CRUD con BCrypt** — cost-factor 10, protección del último ADMIN
+6. **Ventas Transaccional** ⭐ — carrito JS, IGV 18%, código `VTA-YYYY-NNNN`, defensa en 3 capas, auditoría, anulación con reversa, `@Transactional`
+7. **Reportes Excel (Apache POI)** — productos, stock bajo y ventas en `.xlsx`
+8. **Autenticación + Roles (Spring Security)** — RBAC ADMIN/VENDEDOR, login, 403
+9. **Importación masiva CSV** — validación con Commons Lang + Guava
+10. **Pruebas Unitarias (JUnit 5 + Mockito)** — 7 tests en verde (BUILD SUCCESS)
 
-### 2. Productos CRUD + Alertas (RF15)
-- Lista con buscador
-- Crear, editar, eliminar lógico
-- Vista de alertas de stock bajo
-- Validaciones de stock no negativo
+### Lógica del IGV (¡NO REVERTIR!)
+El precio **ya incluye IGV**. El desglose se hace hacia atrás:
+```
+total     = suma de subtotales
+opGravada = total / 1.18
+igv       = total − opGravada     ← por RESTA, garantiza exactitud al céntimo
+```
+El campo `subtotal` en BD almacena la **operación gravada**.
 
-### 3. Categorías CRUD
-- Lista, crear, editar, eliminar lógico
-- Validación de nombre duplicado
+---
 
-### 4. Clientes CRUD
-- Tipos de documento: DNI, RUC, CE, PASAPORTE
-- Reactivación automática al editar cliente inactivo
-- Validación de documento duplicado
-- 3 clientes de prueba creados
+## 🚧 TRABAJO PENDIENTE PARA EL PROYECTO FINAL
 
-### 5. Usuarios CRUD con BCrypt
-- Encriptación BCrypt cost-factor 10 (estándar OWASP)
-- Roles diferenciados: ADMIN (rojo) y VENDEDOR (azul)
-- Validación de password mínimo 6 caracteres
-- Edición sin perder password actual (campo vacío = mantener)
-- 5 usuarios activos en el sistema
+### 1️⃣ Monitoreo (6 pts) — 🟡 EN CURSO
 
-### 6. Ventas Transaccional ⭐ (Módulo crítico)
-- Carrito dinámico con JavaScript
-- Cálculo automático de IGV (18%) en tiempo real
-- Generación automática de código único: `VTA-YYYY-NNNN`
-- **Defensa en 3 capas para stock no negativo:**
-  - Capa SQL: `CHECK (stock_actual >= 0)`
-  - Capa Java: `@Min(0)` en entity
-  - Capa Service: `BusinessException` antes del save
-- Auditoría automática en tabla `auditoria_stock`
-- Anulación de venta con reversa automática de stock
-- `@Transactional` para atomicidad completa
-- Venta de prueba registrada: VTA-2026-0001 (S/123.90)
+**Código:**
+- [ ] Dependencia `spring-boot-starter-actuator` en `pom.xml`
+- [ ] Configuración de endpoints en `application.properties`
+- [ ] `StockCriticoHealthIndicator` (health de negocio: alerta si ≥5 productos en stock mínimo)
+- [ ] 2 queries nuevas en `ProductoRepository` (`contarProductosEnAlerta`, `contarProductosSinStock`)
+- [ ] Proteger `/actuator/**` y `/monitoreo/**` con rol ADMIN en `SecurityConfig`
+- [ ] `MonitoreoController` + vista `templates/monitoreo/index.html` (panel visual)
+- [ ] `logback-spring.xml` con **rotación** + log de errores + log de negocio
+- [ ] Logs de eventos de negocio (`VENTA_REGISTRADA`, `STOCK_CRITICO`)
+- [ ] `MonitoreoProgramado` con `@Scheduled` (heartbeat cada 15 min) + `@EnableScheduling`
 
-### 7. Reportes Excel con Apache POI
-- 3 reportes disponibles:
-  - `/reportes/productos` - Listado completo
-  - `/reportes/stock-bajo` - Alertas RF15
-  - `/reportes/ventas` - Historial RF19-20
-- Formato `.xlsx` (Excel 2007+ / OpenXML)
-- Estilos personalizados: titulo navy, headers blanco/navy
-- Auto-ajuste de columnas
-- Streaming binario con `Content-Disposition: attachment`
-- Nombres con fecha: `MerchStock_TIPO_YYYYMMDD.xlsx`
+**Informe:**
+- [ ] Sección 5: **Plan de Monitoreo** (objetivos, arquitectura en 3 niveles, endpoints, política de retención de logs, **matriz de indicadores/umbrales/acciones**, responsabilidades)
+- [ ] Capturas: `/actuator/health`, panel `/monitoreo`, `/actuator/metrics`, log de negocio
 
-### 8. Autenticación + Roles (Spring Security) 🔐
-- **CustomUserDetailsService** conecta MySQL con Spring Security
-- **BCryptPasswordEncoder** cost-factor 10
-- **DaoAuthenticationProvider**
-- Vista de login bonita con gradient azul-teal
-- Vista de Acceso Denegado (403) personalizada
-- Dropdown de usuario en navbar de todas las vistas
-- Logout con confirmación visual
-- Sesión HTTP de 1 sesión por usuario
-- Manejo de sesión expirada
-- Auditoría de logins en logs
+---
 
-**Reglas de acceso (RBAC):**
+### 2️⃣ Mantenimiento (5 pts) — 🔴 NO INICIADO
 
-| Módulo | ADMIN | VENDEDOR |
-|--------|-------|----------|
-| Home | ✅ | ✅ |
-| Productos (ver) | ✅ | ✅ |
-| Productos (crear/editar/eliminar) | ✅ | ❌ |
-| Categorías | ✅ | ❌ |
-| Clientes | ✅ | ✅ |
-| Usuarios | ✅ | ❌ |
-| Ventas | ✅ | ✅ |
-| Reportes | ✅ | ✅ |
-| Alertas | ✅ | ✅ |
+**Código:**
+- [ ] Script de backup con `mysqldump`
+- [ ] Backup automatizado con `@Scheduled` (o cron job del sistema)
+- [ ] Script de limpieza de logs antiguos
+- [ ] Vista/endpoint para descargar respaldo (RF21)
 
-### 9. Importación masiva de productos desde CSV ⭐ (nuevo)
-- Carga de productos en lote desde archivo `.csv`
-- Validación de cada campo con **Apache Commons Lang** (`StringUtils`)
-  y **Google Guava** (`Preconditions`)
-- Resolución de categoría por nombre (case-insensitive)
-- Reutiliza `productoService.crear()` → hereda validación de SKU duplicado
-- Procesamiento línea por línea: una fila inválida no aborta el proceso
-- DTO `ResultadoImportacion` con resumen de éxitos y errores
-- Vista `importar.html` con instrucciones de formato
+**Informe:**
+- [ ] **Plan de Mantenimiento** (preventivo, correctivo, evolutivo, calendario, responsables)
 
-### 10. Pruebas Unitarias (TDD / JUnit 5) ⭐ (nuevo)
-- **JUnit 5 + Mockito** sobre la capa de servicios
-- `ProductoServiceImplTest` (5 tests): reducción de stock, validación de
-  cantidad, normalización de SKU, detección de SKU duplicado
-- `VentaServiceImplTest` (1 test): cálculo de IGV 18%, total y código de venta
-- Repositorios simulados con mocks (sin BD real) → pruebas rápidas y aisladas
-- **7 tests en verde (BUILD SUCCESS)**
+---
+
+### 3️⃣ Pruebas de Seguridad (completa los 2 pts) — 🔴 NO INICIADO
+
+- [ ] Ejecutar **OWASP ZAP** contra MerchStock en local
+- [ ] Documentar hallazgos → severidad → **corrección aplicada** (= "observaciones levantadas")
+- [ ] Defender los controles ya existentes: BCrypt, RBAC, consultas parametrizadas (anti-SQLi)
+- [ ] Sección de **Reporte de Pruebas de Seguridad** en el informe
+
+---
+
+### 4️⃣ Despliegue (2 pts) — 🔴 NO INICIADO
+
+- [ ] `.\mvnw clean package` → JAR ejecutable
+- [ ] Perfil `application-prod.properties`
+- [ ] Desplegar en servidor (Render / Railway / AWS free tier)
+- [ ] **Plan de Despliegue** en el informe + evidencia de la app corriendo
+
+---
+
+### 5️⃣ Detalles del Informe — 🟡 POR CORREGIR
+
+- [ ] Rellenar los `[CÓDIGO]` de los integrantes (están vacíos):
+  - Remuzgo Ángeles, César Gabriel · **U18208011**
+  - Alejos Pérez, Luis Fernando · **U23247845**
+  - Correa Ángeles, Daleth · **U23225481**
+  - Cueva Samillán, Liz Anyeli · **U21321742**
+  - Romani Villanueva, Luis Ernesto · **0616158**
+- [ ] Generar el **Índice General** (está vacío)
+- [ ] Insertar las ~20 imágenes marcadas con `📷 INSERTAR AQUÍ`
+- [ ] Unificar el número de RFs cubiertos (15 vs ~14) en informe, PPT y este archivo
+
+---
+
+### 6️⃣ Sustentación Oral (2 pts)
+
+- [ ] PPT final del proyecto completo
+- [ ] Guion por integrante (**todos deben exponer**)
+- [ ] Duración máxima: ~10 minutos por grupo
+- [ ] Cubrir: arquitectura, pruebas, despliegue, monitoreo y mantenimiento
+- [ ] Ensayo general con el equipo
+
+---
+
+## 💡 Ideas de Valor Agregado (opcionales, para destacar)
+
+| Idea | Impacto | Esfuerzo |
+|------|---------|----------|
+| Panel de monitoreo en vivo (Actuator) | 🥇 Alto — ataca los 6 pts | Bajo-Medio |
+| App desplegada con URL pública | 🥇 Alto — el profe la abre en su celular | Medio |
+| Alertas automáticas por correo/Telegram al bajar el stock | 🥇 Alto | Medio |
+| Predicción de reposición de stock (media móvil) | 🥈 Muy alto "wow" | Medio |
+| CI/CD con GitHub Actions (tests automáticos en cada push) | 🥈 Alto | Bajo |
+| Códigos QR / barras para registrar ventas escaneando | 🥉 Vistoso en demo | Medio |
 
 ---
 
 ## 🔑 Credenciales de Prueba
-
-Todos los usuarios tienen hash BCrypt real (verificado en MySQL):
 
 | Username | Password | Rol |
 |----------|----------|-----|
@@ -205,196 +234,70 @@ Todos los usuarios tienen hash BCrypt real (verificado en MySQL):
 | `avendedor` | `Andrea2026` | VENDEDOR |
 | `falejos` | `BackEnd2026` | ADMIN |
 
----
-
-## 📊 Métricas del Proyecto
-
-| Métrica | Valor |
-|---------|-------|
-| Pantallas funcionales | 15+ |
-| Módulos completos | 10 |
-| RFs cubiertos | ~14 de 22 (~64%) |
-| Líneas de código Java | ~3000+ |
-| Pruebas unitarias | 7 (todas en verde) |
-| Tablas en BD | 7 con constraints e índices |
-| Commits en develop | 13+ |
-| Patrones aplicados | MVC, DAO, SOLID, RBAC, Defense in Depth, TDD |
+> ⚠️ Credenciales de demo. `application.properties` está en `.gitignore`.
 
 ---
 
-## 🎯 Proyección de Nota APF3
-
-| Criterio | Max | Actual | Meta |
-|----------|-----|--------|------|
-| Diseño solución (MVC+DAO+SOLID+TDD+Seguridad) | 3 | 3/3 ✅ | 3/3 |
-| Uso recursos Java (4 librerías) | 2 | 2/2 ✅ | 2/2 |
-| Control versiones | 3 | 2.5/3 | 3/3 |
-| Interfaces gráficas (100% alcance) | 6 | ~5.5/6 | 6/6 |
-| Construcción producto final | 4 | 4/4 ✅ | 4/4 |
-| Sustentación oral | 2 | 0/2 ⏳ | 2/2 |
-| **TOTAL** | **20** | **~17/20** | **18-20/20** |
-
-> El criterio con mayor margen de mejora pendiente es **Control de versiones**:
-> requiere commits visibles de los 5 integrantes (ver `CONTRIBUTING.md`).
-
----
-
-## 📅 Cronograma APF3
-
-### ✅ COMPLETADO
-
-**Sesión 1 (sábado 7/jun):** Setup + Productos CRUD
-- Configuración inicial del repo
-- Spring Boot generado
-- BD MySQL con 7 tablas
-- Módulo Productos completo
-
-**Sesión 2 (domingo 8/jun):** Clientes + Usuarios + Ventas
-- Módulo Clientes CRUD
-- Módulo Usuarios CRUD con BCrypt
-- Módulo Ventas transaccional con defensa en 3 capas
-- Auditoría de stock
-
-**Sesión 3 (lunes 9/jun):** Reportes + Login
-- Módulo Reportes Excel con Apache POI (cierra las 4 librerías)
-- Módulo Login + Roles con Spring Security
-- 21 archivos en último commit
-
-**Sesión 4 (martes 10/jun):** Tests + Dashboard + CSV + Javadoc
-- ✅ Tests unitarios con JUnit 5 + Mockito (7 tests en verde)
-- ✅ Dashboard con estadísticas en tiempo real
-- ✅ Importación masiva de productos desde CSV
-- ✅ Generación de Javadoc HTML
-- ✅ Actualización de documentación del repo (ESTADO, README, CONTRIBUTING)
-
-### ⏳ PENDIENTE
-
-**Miércoles 11/jun (3 horas):**
-- Informe Word APF3 (90 min)
-- PowerPoint ~12 slides (90 min)
-
-**Jueves 12/jun (2 horas):**
-- Ensayar exposición con el equipo (60 min)
-- Asegurar commits de todos los miembros (30 min)
-- Pulir detalles (30 min)
-
-**Viernes 13/jun:** SUSTENTACIÓN ORAL (~10 min total, todos exponemos)
-
----
-
-## 🧠 Decisiones Importantes Ya Tomadas
-
-### ❌ NO REVERTIR
-- ❌ Presupuesto NO es S/37,000 ni S/6,856.50 → es **S/15,000**
-- ❌ No usar PowerShell con `Out-File -Encoding UTF8` para crear `.java` (mete BOM)
-- ❌ No crear archivos `package-info.java` (problemáticos, innecesarios)
-- ❌ No revertir relaciones EAGER a LAZY en Venta, VentaDetalle, Producto.categoria
-
-### ✅ ADOPTADO
-- ✅ MVC + DAO + SOLID + TDD (pruebas unitarias implementadas)
-- ✅ Eliminación lógica (`activo = false`) en todos los CRUDs
-- ✅ Lombok `@RequiredArgsConstructor` + `@Slf4j` en services
-- ✅ Bootstrap 5 vía CDN + Bootstrap Icons
-- ✅ Estilos standalone en cada vista (no fragments, por simplicidad)
-- ✅ Navbar consistente con 7 enlaces en todas las vistas
-- ✅ Dropdown de usuario a la derecha en navbar
-- ✅ Footer: `© 2026 MerchStock - APF3 - Grupo 3 - UTP 2026`
-- ✅ Patrón PowerShell: `mkdir [ruta] -Force` antes de `New-Item` para crear archivos
-
----
-
-## 🐛 Bugs Resueltos en el Proceso
+## 🐛 Bugs Resueltos (aprendizajes)
 
 | # | Problema | Solución |
 |---|----------|----------|
-| 1 | `LazyInitializationException` en Cliente al ver detalle de venta | Cambiar `FetchType.LAZY` → `EAGER` en Venta.cliente, Venta.usuario, VentaDetalle.producto |
-| 2 | BOM character en archivos `.java` creados con PowerShell | Usar `New-Item` en lugar de `Out-File -Encoding UTF8` |
-| 3 | Bug en `renderCarrito()` JS: mensaje vacío que se borraba | Regenerar mensaje vacío en el HTML del container, no usar variable |
-| 4 | Dropdown de usuario no abría en navbar | Faltaba `<script src="...bootstrap.bundle.min.js"></script>` en algunas vistas |
-| 5 | `BusinessException` no detectaba stock insuficiente | Validación explícita en service ANTES de `save()` |
-| 6 | Carpeta `test` no aparecía en el Explorer de VS Code | Crear carpeta con `mkdir [ruta] -Force` explícito antes de `New-Item` |
-| 7 | `Property 'nombre' cannot be found on Cliente` en Thymeleaf | El campo real es `nombreCompleto` — revisar entity antes de generar vistas |
-| 8 | `BUILD FAILURE` en Javadoc por símbolo `<` en comentarios | Javadoc interpreta `<` como HTML; los archivos HTML igual se generan |
+| 1 | `LazyInitializationException` al ver detalle de venta | `FetchType.LAZY` → `EAGER` en Venta.cliente, Venta.usuario, VentaDetalle.producto |
+| 2 | BOM en archivos `.java` creados con PowerShell | Usar `New-Item`, no `Out-File -Encoding UTF8` |
+| 3 | Bug en `renderCarrito()` JS | No destruir elementos referenciados con `innerHTML`; regenerar dentro del container |
+| 4 | Dropdown de usuario no abría | Faltaba `bootstrap.bundle.min.js` antes de `</body>` — **revisar en TODA vista nueva** |
+| 5 | `BusinessException` no detectaba stock insuficiente | Validación explícita en el service ANTES del `save()` |
+| 6 | Carpeta `test` no aparecía en VS Code | `mkdir [ruta] -Force` antes de `New-Item` |
+| 7 | `Property 'nombre' cannot be found on Cliente` | El campo real es `nombreCompleto` — revisar la entity antes de generar vistas |
+| 8 | `BUILD FAILURE` en Javadoc | Evitar el símbolo `<` en comentarios Javadoc |
 
 ---
 
 ## 🔧 Comandos Útiles
 
-### Arrancar el sistema
 ```powershell
 cd F:\GitHub\MerchStock
-.\mvnw spring-boot:run
+
+.\mvnw spring-boot:run              # Arrancar el sistema
+.\mvnw clean compile                # Compilar
+.\mvnw test                         # Correr las 7 pruebas unitarias
+.\mvnw clean package                # Generar el JAR (despliegue)
+.\mvnw javadoc:javadoc              # Javadoc → target/reports/apidocs/
 ```
 
-### Limpiar y recompilar
-```powershell
-.\mvnw clean install -DskipTests
+**Endpoints de monitoreo** (una vez implementados, como ADMIN):
 ```
-
-### Correr las pruebas unitarias
-```powershell
-.\mvnw test
-```
-
-### Generar Javadoc HTML
-```powershell
-.\mvnw javadoc:javadoc
-# Salida: target/reports/apidocs/
-```
-
-### Verificar dependencias
-```powershell
-.\mvnw dependency:tree
+http://localhost:8080/actuator/health
+http://localhost:8080/actuator/metrics
+http://localhost:8080/monitoreo
 ```
 
 ---
 
 ## 🎓 Conceptos Clave para la Sustentación
 
-### Defensa en 3 Capas (Stock no negativo)
-Capa 1 (BD):      CHECK (stock_actual >= 0)
-Capa 2 (Java):    @Min(0) en entity Producto.stockActual
-Capa 3 (Service): validación explícita + BusinessException antes del save
+**Defensa en 3 capas (stock no negativo)**
+`CHECK (stock_actual >= 0)` en BD + `@Min(0)` en la entity + `BusinessException` en el service.
 
-### Transaccionalidad
-`@Transactional` en `registrarVenta()` garantiza atomicidad:
-si falla cualquier paso, se hace rollback de TODA la operación
-(stock reducido, venta guardada, auditoría) - no quedan estados parciales.
+**Transaccionalidad** — `@Transactional` en `registrarVenta()` garantiza atomicidad: si algo falla, rollback total (stock, venta y auditoría). No quedan estados parciales.
 
-### Seguridad BCrypt
-Función hash unidireccional con cost-factor 10 = 1024 iteraciones.
-NUNCA se desencripta. Spring Security compara el password ingresado
-encriptado vs el hash almacenado.
+**BCrypt** — hash unidireccional, cost-factor 10. Nunca se desencripta; se compara.
 
-### RBAC (Role-Based Access Control)
-Cada usuario tiene un rol (ADMIN o VENDEDOR). Las URLs están
-mapeadas a roles específicos en `SecurityConfig`. Aplica el principio
-de mínimo privilegio.
+**RBAC** — cada URL mapeada a un rol, aplicando mínimo privilegio.
 
-### Pruebas Unitarias (TDD)
-JUnit 5 + Mockito sobre la capa de servicios. Los repositorios se
-simulan con mocks, así se prueba SOLO la lógica de negocio (cálculo
-de IGV, defensa de stock, validaciones) sin levantar Spring ni MySQL.
+**Monitoreo** — 3 ejes: **logs** (trazabilidad), **performance tools** (memoria/CPU) y **health tools** (disponibilidad). Nuestro diferencial: el health indicator también responde *"¿el inventario está sano?"*, no solo *"¿el sistema está vivo?"*.
 
-### MVC + DAO + SOLID
-- **MVC:** Controller → Service → Repository → Entity → View
-- **DAO:** Spring Data JPA con 7 Repositories que extienden JpaRepository
-- **SOLID:**
-  - SRP: cada clase tiene una responsabilidad
-  - OCP: extensible vía interfaces
-  - LSP: implementaciones intercambiables
-  - ISP: interfaces específicas (no fat interfaces)
-  - DIP: Controllers dependen de Service interfaces, no de impls
+**MVC + DAO + SOLID** — Controller → Service → Repository → Entity → View, con inyección por constructor (DIP).
 
 ---
 
-## 📞 Contacto y Soporte
+## 📞 Contacto
 
 **Project Manager:** Cesar Gabriel Remuzgo Ángeles
-**Email:** u18208011@utp.edu.pe
-**GitHub:** @CesarRemuzgo
+**Email:** u18208011@utp.edu.pe · **GitHub:** @CesarRemuzgo
 
 ---
 
-_Última actualización: 10 de junio de 2026_
-_Próxima sesión planificada: miércoles 11 de junio (Informe Word + PowerPoint)_
+_Última actualización: 14 de julio de 2026_
+_Fase actual: **Proyecto Final** — implementando Monitoreo_
+_Días restantes para la sustentación: **11**_

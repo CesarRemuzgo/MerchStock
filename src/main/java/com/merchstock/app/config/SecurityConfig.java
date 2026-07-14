@@ -96,6 +96,11 @@ public class SecurityConfig {
                                  "/ventas/**", "/clientes/**", "/reportes/**")
                         .hasAnyRole("ADMIN", "VENDEDOR")
 
+                // Monitoreo: health publico, el resto solo ADMIN
+                .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/actuator/**").hasRole("ADMIN")
+                .requestMatchers("/monitoreo/**").hasRole("ADMIN")      
+
                 // Cualquier otra ruta requiere autenticacion
                 .anyRequest().authenticated()
             )

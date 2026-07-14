@@ -66,4 +66,12 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
      */
     @Query("UPDATE Producto p SET p.stockActual = :nuevoStock WHERE p.id = :idProducto")
     void actualizarStock(@Param("idProducto") Long idProducto, @Param("nuevoStock") Integer nuevoStock);
+
+    /** Cuenta los productos activos cuyo stock llego al minimo. */
+    @Query("SELECT COUNT(p) FROM Producto p WHERE p.activo = true AND p.stockActual <= p.stockMinimo")
+    long contarProductosEnAlerta();
+
+    /** Cuenta los productos activos que se quedaron sin stock. */
+    @Query("SELECT COUNT(p) FROM Producto p WHERE p.activo = true AND p.stockActual = 0")
+    long contarProductosSinStock();
 }
