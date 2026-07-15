@@ -29,6 +29,16 @@
                 <li class="nav-item"><a class="nav-link active text-white" th:href="@{/ventas}">Ventas</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/reportes}">Reportes</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/monitoreo}">
+                            <i class="bi bi-activity"></i> Monitoreo
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/mantenimiento}">
+                            <i class="bi bi-hdd-stack"></i> Mantenimiento
+                        </a>
+                    </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">

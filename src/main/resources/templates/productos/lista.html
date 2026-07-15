@@ -35,6 +35,16 @@
                             class="badge bg-danger" th:text="${totalAlertas}">0</span>
                     </a>
                 </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link text-white" th:href="@{/monitoreo}">
+                        <i class="bi bi-activity"></i> Monitoreo
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link text-white" th:href="@{/mantenimiento}">
+                        <i class="bi bi-hdd-stack"></i> Mantenimiento
+                    </a>
+                </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
