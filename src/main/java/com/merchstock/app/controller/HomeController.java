@@ -1,8 +1,10 @@
 package com.merchstock.app.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.merchstock.app.service.ProductoService;
 import com.merchstock.app.service.VentaService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +26,12 @@ import java.time.LocalTime;
  */
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class HomeController {
 
     private final ProductoService productoService;
     private final VentaService ventaService;
+    private final ObjectMapper objectMapper;
 
     /**
      * Pagina de inicio con estadisticas del negocio.
@@ -51,12 +55,32 @@ public class HomeController {
             ingresosHoy = BigDecimal.ZERO; // si no hay ventas hoy, el SUM devuelve null
         }
 
-        model.addAttribute("totalProductos", totalProductos);
+       model.addAttribute("totalProductos", totalProductos);
         model.addAttribute("totalAlertas", totalAlertas);
         model.addAttribute("ventasHoy", ventasHoy);
         model.addAttribute("ingresosHoy", ingresosHoy);
         model.addAttribute("ventasRecientes", ventaService.listarRecientes());
 
+        // Datos para los graficos del dashboard (Chart.js)
+        model.addAttribute("ventasUltimos7DiasJson",
+                convertirAJson(ventaService.obtenerVentasUltimos7Dias()));
+        model.addAttribute("topProductosJson",
+                convertirAJson(ventaService.obtenerTop5ProductosMasVendidos()));
+
         return "home";
+    }
+
+    /**
+     * Convierte una lista de mapas a JSON para pasarla directamente
+     * al script de Chart.js en la vista, evitando construir el JSON
+     * manualmente con Thymeleaf.
+     */
+    private String convertirAJson(Object datos) {
+        try {
+            return objectMapper.writeValueAsString(datos);
+        } catch (Exception ex) {
+            log.error("Error al convertir datos del dashboard a JSON: {}", ex.getMessage());
+            return "[]";
+        }
     }
 }

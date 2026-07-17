@@ -18,9 +18,16 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Implementacion del servicio de Ventas - El nucleo transaccional del sistema.
@@ -45,6 +52,7 @@ public class VentaServiceImpl implements VentaService {
     private static final int ESCALA_DECIMAL = 2;
 
     private final VentaRepository ventaRepository;
+    private final VentaDetalleRepository ventaDetalleRepository;
     private final ProductoRepository productoRepository;
     private final ClienteRepository clienteRepository;
     private final UsuarioRepository usuarioRepository;
@@ -302,6 +310,75 @@ public class VentaServiceImpl implements VentaService {
     @Override
     public long contarVentas(LocalDateTime inicio, LocalDateTime fin) {
         return ventaRepository.countVentasEntreFechas(inicio, fin);
+    }
+
+    /**
+     * Calcula el total de ventas COMPLETADAS de cada uno de los ultimos 7 dias
+     * (incluyendo hoy), rellenando con cero los dias sin ventas.
+     *
+     * La agrupacion por dia se hace en memoria (no en SQL) porque la funcion
+     * para truncar fechas a nivel de dia varia segun el motor de BD, y el
+     * volumen de ventas de una microempresa en una semana es minimo.
+     */
+    @Override
+    public List<Map<String, Object>> obtenerVentasUltimos7Dias() {
+        log.debug("Calculando ventas de los ultimos 7 dias para el dashboard");
+
+        LocalDate hoy = LocalDate.now();
+        LocalDate hace6Dias = hoy.minusDays(6); // 7 dias en total, incluyendo hoy
+        LocalDateTime inicio = hace6Dias.atStartOfDay();
+        LocalDateTime fin = hoy.atTime(LocalTime.MAX);
+
+        List<Venta> ventasDelPeriodo = ventaRepository.findByRangoFechas(inicio, fin).stream()
+                .filter(v -> v.getEstado() == Venta.EstadoVenta.COMPLETADA)
+                .collect(Collectors.toList());
+
+        DateTimeFormatter formatoEtiqueta = DateTimeFormatter.ofPattern("dd/MM");
+        List<Map<String, Object>> resultado = new ArrayList<>();
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate dia = hace6Dias.plusDays(i);
+
+            BigDecimal totalDia = ventasDelPeriodo.stream()
+                    .filter(v -> v.getFechaVenta().toLocalDate().equals(dia))
+                    .map(Venta::getTotal)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            Map<String, Object> punto = new LinkedHashMap<>();
+            punto.put("fecha", dia.format(formatoEtiqueta));
+            punto.put("total", totalDia);
+            resultado.add(punto);
+        }
+
+        log.debug("Ventas de los ultimos 7 dias calculadas: {} puntos", resultado.size());
+        return resultado;
+    }
+
+    /**
+     * Obtiene el top 5 de productos mas vendidos (historico completo),
+     * reutilizando la consulta ya existente en VentaDetalleRepository.
+     */
+    @Override
+    public List<Map<String, Object>> obtenerTop5ProductosMasVendidos() {
+        log.debug("Calculando top 5 de productos mas vendidos para el dashboard");
+
+        LocalDateTime inicioHistorico = LocalDateTime.of(2000, 1, 1, 0, 0);
+        LocalDateTime ahora = LocalDateTime.now();
+
+        List<Object[]> filas = ventaDetalleRepository.findProductosMasVendidos(inicioHistorico, ahora);
+
+        List<Map<String, Object>> resultado = filas.stream()
+                .limit(5)
+                .map(fila -> {
+                    Map<String, Object> punto = new LinkedHashMap<>();
+                    punto.put("nombre", fila[1]);   // vd.producto.nombre
+                    punto.put("cantidad", fila[2]); // SUM(vd.cantidad)
+                    return punto;
+                })
+                .collect(Collectors.toList());
+
+        log.debug("Top productos mas vendidos calculado: {} productos", resultado.size());
+        return resultado;
     }
 
     /**
