@@ -50,12 +50,6 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findProductosConStockBajo();
 
     /**
-     * Cuenta productos con stock bajo (para el dashboard)
-     */
-    @Query("SELECT COUNT(p) FROM Producto p WHERE p.activo = true AND p.stockActual <= p.stockMinimo")
-    long countProductosConStockBajo();
-
-    /**
      * Productos sin stock (stock_actual = 0)
      */
     @Query("SELECT p FROM Producto p WHERE p.activo = true AND p.stockActual = 0 ORDER BY p.nombre ASC")

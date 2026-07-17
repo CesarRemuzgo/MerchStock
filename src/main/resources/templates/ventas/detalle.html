@@ -15,7 +15,9 @@
         .badge-completada { background-color: var(--teal); }
         .badge-anulada { background-color: #dc3545; }
         .codigo-venta { font-family: 'Courier New', monospace; }
-        .total-card { background: linear-gradient(135deg, var(--navy), var(--teal)); color: white; }
+            .total-card { background: linear-gradient(135deg, var(--navy), var(--teal)); color: white; }
+            .btn-navy { background-color: var(--navy); color: white; border: none; }
+            .btn-navy:hover { background-color: #16294a; color: white; }
     </style>
 </head>
 <body>
@@ -26,9 +28,9 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
-                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
-                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
                 <li class="nav-item"><a class="nav-link active text-white" th:href="@{/ventas}">Ventas</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/reportes}">Reportes</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
@@ -95,6 +97,9 @@
         <div>
             <a th:href="@{/ventas}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver
+            </a>
+            <a th:href="@{/ventas/{id}/pdf(id=${venta.id})}" class="btn btn-navy ms-1">
+                <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
             </a>
             <span th:if="${venta.estado == T(com.merchstock.app.entity.Venta.EstadoVenta).COMPLETADA}"
                   class="badge badge-completada fs-6 ms-2">

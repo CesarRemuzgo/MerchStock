@@ -5,6 +5,7 @@ import com.merchstock.app.entity.Venta;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Servicio de Ventas - Interface (SOLID: Interface Segregation)
@@ -77,4 +78,21 @@ public interface VentaService {
      * Cuenta el numero de ventas entre 2 fechas
      */
     long contarVentas(LocalDateTime inicio, LocalDateTime fin);
+
+    /**
+     * Totales de ventas (en dinero) de los ultimos 7 dias (incluyendo hoy),
+     * uno por dia, con relleno en cero para dias sin ventas.
+     * Usado para el grafico de linea del dashboard (Chart.js).
+     *
+     * Cada elemento del mapa tiene las claves "fecha" (String, dd/MM) y "total" (BigDecimal).
+     */
+    List<Map<String, Object>> obtenerVentasUltimos7Dias();
+
+    /**
+     * Top 5 productos mas vendidos (por cantidad), historico completo.
+     * Usado para el grafico de barras del dashboard (Chart.js).
+     *
+     * Cada elemento del mapa tiene las claves "nombre" (String) y "cantidad" (Long).
+     */
+    List<Map<String, Object>> obtenerTop5ProductosMasVendidos();
 }

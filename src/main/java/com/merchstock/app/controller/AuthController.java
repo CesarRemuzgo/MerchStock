@@ -29,11 +29,17 @@ public class AuthController {
             @RequestParam(required = false) String error,
             @RequestParam(required = false) String logout,
             @RequestParam(required = false) String expired,
+            @RequestParam(required = false) String locked,
             Model model) {
 
         if (error != null) {
             log.debug("Mostrando pagina de login con error de credenciales");
             model.addAttribute("mensajeError", "Usuario o contrasena incorrectos");
+        }
+
+        if (locked != null) {
+            log.debug("Mostrando pagina de login con cuenta bloqueada");
+            model.addAttribute("mensajeError", "Cuenta bloqueada temporalmente por multiples intentos fallidos. Intenta nuevamente en 15 minutos.");
         }
 
         if (logout != null) {
