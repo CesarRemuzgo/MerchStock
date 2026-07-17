@@ -2,7 +2,7 @@
 **Sistema Web de Administración de Inventario**
 MerchStock Perú E.I.R.L. · Av. Carlos Izaguirre 845, Los Olivos, Lima
 
-> Versión 1.0 · APF3 · UTP 2026 · Grupo 3
+> Versión 2.0 · Proyecto Final · UTP 2026 · Grupo 3
 
 ---
 
@@ -64,12 +64,9 @@ No se requiere instalar ningún software adicional. Solo necesitas un navegador 
 
 Si las credenciales son correctas, el sistema te llevará al **Panel de Control** (Dashboard).
 
-### 3.2 Credenciales de ejemplo
+### 3.2 Credenciales de acceso
 
-| Usuario | Contraseña | Rol |
-|---------|-----------|-----|
-| `admin` | `Admin2026` | ADMIN |
-| `pventa1` | `Patricia2026` | VENDEDOR |
+Las credenciales de acceso son proporcionadas por el administrador del sistema. Por motivos de seguridad, esta información no se muestra en la pantalla de inicio de sesión.
 
 >  Cambia las contraseñas predeterminadas en el primer inicio de sesión. No compartas tus credenciales con otras personas.
 
@@ -111,6 +108,8 @@ En la parte superior de todas las pantallas encontrarás la barra de navegación
 - **Ventas** — Registro y consulta de ventas
 - **Reportes** — Descarga de reportes Excel
 - **Alertas** — Productos con stock bajo (muestra un contador en rojo si hay alertas)
+- **Monitoreo** — Panel de estado del sistema (solo visible para ADMIN)
+- **Mantenimiento** — Panel de respaldos de base de datos (solo visible para ADMIN)
 
 A la derecha de la barra verás tu nombre de usuario. Haz clic sobre él para acceder al menú de cierre de sesión.
 
@@ -282,10 +281,12 @@ Haz clic en el botón **Ver Detalle** para ver el desglose de productos de una v
    - Ingresa la cantidad deseada.
    - Haz clic en **Agregar al Carrito**.
    - Repite para cada producto adicional.
-5. El sistema calcula automáticamente:
-   - **Subtotal** (suma de ítems sin impuesto)
-   - **IGV** (18% sobre el subtotal)
-   - **Total** (subtotal + IGV)
+5. El sistema calcula automáticamente el desglose de impuestos. Es importante entender que **el precio de cada producto ya incluye el IGV** (18%), por lo que el cálculo se hace de forma inversa:
+   - **Total** = suma de los precios de venta de los ítems del carrito (el precio que ves ya incluye IGV)
+   - **Operación Gravada** = Total ÷ 1.18
+   - **IGV** = Total − Operación Gravada
+
+   Este método garantiza exactitud al céntimo en el desglose, evitando errores de redondeo que ocurrirían si el IGV se calculara multiplicando directamente sobre un subtotal.
 6. Selecciona el **Método de Pago**: EFECTIVO, TARJETA, YAPE, PLIN o TRANSFERENCIA.
 7. Agrega **Observaciones** si es necesario (opcional).
 8. Haz clic en **Registrar Venta**.
@@ -400,6 +401,8 @@ El sistema cuenta con dos roles con distintos niveles de acceso:
 | Anular Ventas | ✅ | ❌ |
 | Ver Reportes y descargar Excel | ✅ | ✅ |
 | Ver Alertas de Stock | ✅ | ✅ |
+| Ver Panel de Monitoreo | ✅ | ❌ |
+| Ver Panel de Mantenimiento (respaldos) | ✅ | ❌ |
 
 Si intentas realizar una acción para la que no tienes permiso, el sistema te mostrará la pantalla de **Acceso Denegado**.
 
@@ -434,7 +437,7 @@ Si intentas realizar una acción para la que no tienes permiso, el sistema te mo
 | Campo | Valor |
 |-------|-------|
 | Aplicación | MerchStock — Sistema Web de Administración de Inventario |
-| Versión | APF3 · 2026 |
+| Versión | Proyecto Final · 2026 |
 | Empresa cliente | MerchStock Perú E.I.R.L. |
 | Tecnología | Java 17 · Spring Boot 3.5 · MySQL 8 · Thymeleaf · Bootstrap 5 |
 | Desarrollado por | Grupo 3 — Curso Integrador I Sistemas Software, UTP 2026 |
@@ -442,4 +445,4 @@ Si intentas realizar una acción para la que no tienes permiso, el sistema te mo
 
 ---
 
-*© 2026 MerchStock — APF3 — Grupo 3 — UTP 2026*
+*© 2026 MerchStock — Proyecto Final — Grupo 3 — UTP 2026*

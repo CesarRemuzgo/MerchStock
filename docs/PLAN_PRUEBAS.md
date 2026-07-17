@@ -1,7 +1,7 @@
 # 🧪 Plan de Pruebas – MerchStock
 
 > **Sistema web de gestión de inventario para MerchStock Perú E.I.R.L.**
-> Avance de Proyecto Final 3 (APF3) - UTP 2026
+> Proyecto Final - UTP 2026
 
 ---
 
@@ -10,10 +10,11 @@
 | Campo | Descripción |
 |---------|-------------|
 | 🏷️ Proyecto | MerchStock |
-| 🚀 Versión | APF3 |
-| ☕ Lenguaje | Java 21 |
+| 🚀 Versión | Proyecto Final |
+| ☕ Lenguaje | Java 17 |
 | 🌱 Framework | Spring Boot 3 |
 | 🧪 Herramientas de prueba | JUnit 5 + Mockito |
+| 🛡️ Herramienta de seguridad | OWASP ZAP 2.17.0 |
 | 👥 Equipo | Grupo MerchStock |
 | 📅 Fecha | 2026 |
 
@@ -21,7 +22,7 @@
 
 ## 🎯 2. Objetivo
 
-Garantizar la calidad del sistema mediante pruebas unitarias automatizadas que validen las reglas de negocio críticas relacionadas con inventario, ventas, productos y cálculos financieros.
+Garantizar la calidad del sistema mediante pruebas unitarias automatizadas que validen las reglas de negocio críticas relacionadas con inventario, ventas, productos y cálculos financieros, complementadas con pruebas activas de seguridad sobre el sistema desplegado.
 
 ---
 
@@ -37,6 +38,7 @@ Las pruebas cubren los siguientes módulos:
 - ✅ Validaciones de negocio
 - ✅ Cálculo de IGV
 - ✅ Generación de códigos de venta
+- ✅ Seguridad de la aplicación desplegada (OWASP ZAP)
 
 ---
 
@@ -67,6 +69,21 @@ Herramientas utilizadas:
 ---
 
 ## 📑 5. Casos de Prueba
+
+### 🔧 CP-00 Carga del Contexto de la Aplicación
+
+**Clase:** MerchstockAppApplicationTests
+
+**Objetivo:**
+Verificar que el contexto de Spring Boot arranca correctamente con toda la configuración (beans, seguridad, JPA) sin errores.
+
+**Resultado esperado:**
+
+- El contexto de la aplicación se inicializa sin excepciones.
+
+**Estado:** ✅ Aprobado
+
+---
 
 ### 🛒 CP-01 Reducción de Stock
 
@@ -144,46 +161,24 @@ Evitar el registro de productos repetidos.
 
 ---
 
-### 💰 CP-06 Cálculo Automático de IGV
+### 💰 CP-06 Cálculo Automático de IGV y Código de Venta
 
 **Clase:** VentaServiceImplTest
 
 **Objetivo:**
-Validar el cálculo del impuesto y total de venta.
+Validar el cálculo del desglose de IGV (18%, por desglose inverso sobre el total) y la generación automática del código de venta.
 
 **Resultado esperado:**
 
-- IGV = 18%
+- IGV calculado correctamente (Total − Operación Gravada, donde Operación Gravada = Total ÷ 1.18).
+- Código con formato `VTA-YYYY-NNNN` (ejemplo: `VTA-2026-0001`).
 - Total correcto.
 
 **Estado:** ✅ Aprobado
 
 ---
 
-### 🧾 CP-07 Generación de Código de Venta
-
-**Clase:** VentaServiceImplTest
-
-**Objetivo:**
-Verificar la generación automática del código de venta.
-
-**Resultado esperado:**
-
-```text
-VTA-YYYY-NNNN
-```
-
-Ejemplo:
-
-```text
-VTA-2026-0001
-```
-
-**Estado:** ✅ Aprobado
-
----
-
-## 📊 6. Resumen de Resultados
+## 📊 6. Resumen de Resultados — Pruebas Unitarias
 
 | Métrica | Resultado |
 |----------|-----------|
@@ -193,13 +188,13 @@ VTA-2026-0001
 | ⚠️ Errores | 0 |
 | 🚀 Estado final | BUILD SUCCESS |
 
+**Desglose:** 1 prueba de carga de contexto (`contextLoads`) + 5 pruebas de `ProductoServiceImplTest` + 1 prueba de `VentaServiceImplTest`.
+
 ---
 
-## 📸 7. Evidencias
+## 📸 7. Evidencias — Pruebas Unitarias
 
 ### 🖥️ Ejecución de pruebas
-
-Insertar captura de:
 
 ```bash
 Tests run: 7
@@ -221,15 +216,66 @@ BUILD SUCCESS
 
 ---
 
-## 🏁 8. Conclusiones
+## 🛡️ 8. Pruebas de Seguridad (OWASP ZAP)
 
-- ✅ Las pruebas validan las reglas críticas del negocio.
-- ✅ Mockito permitió aislar la lógica de negocio de la base de datos.
-- ✅ La estrategia TDD incrementó la confiabilidad del código.
-- ✅ Todas las pruebas fueron ejecutadas exitosamente.
-- ✅ El sistema mantiene la integridad del inventario y de las ventas.
+Complementando las pruebas unitarias, se ejecutó un escaneo de seguridad con **OWASP ZAP 2.17.0** contra el sistema desplegado (`.jar` standalone en `http://localhost:8080`), aplicando el marco **OWASP Top 10:2025**.
+
+### 📋 8.1 Metodología
+
+- **Herramienta:** OWASP ZAP 2.17.0 (Automated Scan: Spider + Active Scan)
+- **Objetivo escaneado:** `http://localhost:8080`
+- **Tipo de escaneo:** Sin autenticación (cobertura de la superficie pública: login, recursos estáticos, cabeceras HTTP globales)
+- **Política de escaneo:** Dev Standard
+
+### 📋 8.2 Resumen de hallazgos
+
+| Riesgo | Alerta | Instancias |
+|--------|--------|:----------:|
+| 🟠 Medio | Cabecera Content Security Policy (CSP) no configurada | 3 |
+| 🟠 Medio | Falta atributo de integridad de recursos secundarios (SRI) | 5 |
+| 🟠 Medio | Ausencia de Tokens Anti-CSRF | 3 |
+| 🟡 Bajo | Cookie sin atributo SameSite | 3 |
+| ⚪ Informativo | Petición de Autenticación Identificada | 1 |
+| ⚪ Informativo | Respuesta de Gestión de Sesión Identificada | 4 |
+
+**Sin hallazgos de riesgo Alto o Crítico.**
+
+### 🎯 8.3 Hallazgo destacado
+
+El escaneo confirmó, con evidencia real, una deuda técnica ya documentada en el código (`SecurityConfig.java` deshabilita CSRF explícitamente, con un comentario indicando que es temporal para desarrollo). Esto valida la coherencia entre el análisis estático del código y la verificación dinámica del sistema en ejecución.
+
+### 📊 8.4 Priorización de riesgos
+
+Aplicando la fórmula **Riesgo = Probabilidad × Impacto**:
+
+| Prioridad | Hallazgo |
+|-----------|----------|
+| Alta | Ausencia de Tokens Anti-CSRF |
+| Media | Cabecera CSP no configurada |
+| Media | Falta de atributo de integridad (SRI) |
+| Baja | Cookie sin atributo SameSite |
+
+### ✅ 8.5 Estado
+
+- ✅ Escaneo ejecutado y documentado
+- ✅ Hallazgos priorizados y mapeados a OWASP Top 10:2025 y CWE
+- ✅ Plan de remediación propuesto
+
+**Reporte completo:** ver sección "Pruebas de Seguridad" del documento `MerchStock_Fase_Final_Completa.docx`.
 
 ---
 
-**MerchStock APF3**
-🛠️ Spring Boot • 🧪 JUnit 5 • 🎭 Mockito • ☕ Java 21
+## 🏁 9. Conclusiones
+
+- ✅ Las pruebas unitarias validan las reglas críticas del negocio.
+- ✅ Mockito permitió aislar la lógica de negocio de la base de datos.
+- ✅ La estrategia TDD incrementó la confiabilidad del código.
+- ✅ Todas las pruebas unitarias fueron ejecutadas exitosamente (7/7).
+- ✅ El sistema mantiene la integridad del inventario y de las ventas.
+- ✅ El escaneo de seguridad con OWASP ZAP no encontró vulnerabilidades de riesgo Alto o Crítico, validando los controles ya implementados (BCrypt, RBAC, consultas parametrizadas).
+- ✅ Los hallazgos de seguridad identificados quedan documentados con un plan de remediación priorizado.
+
+---
+
+**MerchStock — Proyecto Final**
+🛠️ Spring Boot • 🧪 JUnit 5 • 🎭 Mockito • 🛡️ OWASP ZAP • ☕ Java 17

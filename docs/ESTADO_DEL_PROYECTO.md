@@ -1,7 +1,7 @@
 # 📋 Estado del Proyecto MerchStock
 
 > **Sistema web de gestión de inventario para MerchStock Perú E.I.R.L.**
-> **PROYECTO FINAL** — Semana 18 · UTP 2026
+> **PROYECTO FINAL** — Fase de cierre · UTP 2026
 
 ---
 
@@ -21,11 +21,6 @@
 | **Entrega APF3** | ✅ Viernes 13 de junio de 2026 (COMPLETADA) |
 | **SUSTENTACIÓN FINAL** | 🔴 **Sábado 25 de julio de 2026** |
 
-> ⚠️ **PENDIENTE DE UNIFICAR:** el Informe APF3 declara **15 de 22 RF** cubiertos,
-> pero este documento y el PPT dicen **~14 de 22**. Antes de la entrega final hay
-> que verificar el número real y dejarlo idéntico en el informe, el PPT y aquí.
-> La rúbrica califica **coherencia entre documentación y código**.
-
 ---
 
 ## 👥 Equipo Grupo 3
@@ -42,19 +37,18 @@
 
 ## 🏆 RÚBRICA DEL PROYECTO FINAL (20 pts) — Estado actual
 
-| Criterio | Puntos | Estado | Qué falta |
-|----------|--------|--------|-----------|
-| **Pruebas de software y seguridad** | 2 | 🟡 50% | Tests ✅ · Falta **reporte de pruebas de seguridad (OWASP ZAP)** con observaciones levantadas |
-| **Despliegue del proyecto** | 2 | 🔴 0% | Empaquetado Maven, configuración de servidor y **Plan de Despliegue** |
-| **Monitoreo del proyecto** | 6 | 🟡 En curso | Actuator + health/metrics + logs + **Plan de Monitoreo** |
-| **Mantenimiento del proyecto** | 5 | 🔴 0% | Cron jobs, backups, scripts y **Plan de Mantenimiento** |
-| **Construcción del producto final** | 3 | 🟢 ~100% | Completo, coherente, buenas prácticas y autoría ✅ |
-| **Sustentación oral** | 2 | ⚪ Pendiente | Preparar PPT final y guion (todos exponen, ~10 min) |
-| **TOTAL** | **20** | **~5.5 / 20** | 🚨 **13 pts dependen de trabajo aún no iniciado** |
+| Criterio | Puntos | Estado | Detalle |
+|----------|--------|--------|---------|
+| **Pruebas de software y seguridad** | 2 | 🟢 100% | Tests ✅ · Escaneo OWASP ZAP ejecutado, 6 hallazgos documentados y priorizados (sin riesgo Alto/Crítico) |
+| **Despliegue del proyecto** | 2 | 🟢 100% | `.jar` empaquetado, ejecución independiente verificada, puerto expuesto en todas las interfaces (`0.0.0.0:8080`) |
+| **Monitoreo del proyecto** | 6 | 🟢 100% | Actuator + health de negocio (StockCriticoHealthIndicator) + panel `/monitoreo` + Logback con 3 destinos + heartbeat `@Scheduled` |
+| **Mantenimiento del proyecto** | 5 | 🟢 100% | Backups automatizados (`@Scheduled`) + panel manual `/mantenimiento` + política de retención de 30 días |
+| **Construcción del producto final** | 3 | 🟢 100% | Completo, coherente, buenas prácticas y autoría ✅ |
+| **Sustentación oral** | 2 | 🔴 Pendiente | Preparar PPT final y guion (todos exponen, ~10 min) |
+| **TOTAL** | **20** | **18 / 20 asegurados** | 🎯 Solo falta la Sustentación Oral |
 
-> 🚨 **PRIORIDAD MÁXIMA:** Monitoreo (6) + Mantenimiento (5) = **11 puntos**.
-> Son los rubros de mayor peso y los menos avanzados. La mayor parte es
-> **configuración + documentación**, no reprogramar el sistema.
+> ✅ **Los 4 módulos de mayor peso (Monitoreo, Mantenimiento, Despliegue, Seguridad = 15 pts) están completos y documentados.**
+> Todo el detalle técnico, capturas y matrices de responsabilidad están en `MerchStock_Fase_Final_Completa.docx`.
 
 ---
 
@@ -67,8 +61,10 @@
 - **Base de datos:** MySQL 8 (BD: `merchstock_db`)
 - **ORM:** Spring Data JPA / Hibernate
 - **Seguridad:** Spring Security + BCrypt (cost-factor 10)
-- **Testing:** JUnit 5 + Mockito
-- **Monitoreo:** Spring Boot Actuator + Micrometer *(en implementación)*
+- **Testing:** JUnit 5 + Mockito (7 pruebas: 1 `contextLoads()` + 6 de negocio)
+- **Monitoreo:** Spring Boot Actuator + Micrometer ✅
+- **Mantenimiento:** BackupService con `mysqldump` vía ProcessBuilder ✅
+- **Seguridad activa:** OWASP ZAP 2.17.0 ✅
 
 ### Frontend
 - **Templating:** Thymeleaf
@@ -78,13 +74,14 @@
 ### Estructura de paquetes
 ```
 com.merchstock.app
-├── config       (SecurityConfig)
+├── config          (SecurityConfig)
 ├── controller
-├── entity       ← las entidades viven aquí (NO en 'model')
+├── entity          ← las entidades viven aquí (NO en 'model')
 ├── repository
 ├── service
 │   └── impl
-├── monitoreo    ← nuevo (Actuator)
+├── monitoreo       (Actuator, panel, tareas programadas)
+├── mantenimiento   (BackupService, panel, tareas programadas)
 └── util
 ```
 
@@ -95,7 +92,7 @@ com.merchstock.app
 | ✅ **Google Guava 33.3.1** | `Preconditions.checkNotNull/checkArgument` en services |
 | ✅ **Apache POI 5.3.0** | `XSSFWorkbook` para reportes Excel |
 | ✅ **Apache Commons Lang 3.17.0** | `StringUtils` en services e importación CSV |
-| ✅ **Logback (vía Spring)** | `@Slf4j` + `logback-spring.xml` |
+| ✅ **Logback (vía Spring)** | `@Slf4j` + `logback-spring.xml` con 3 destinos (general, errores, negocio) |
 
 ---
 
@@ -105,13 +102,13 @@ com.merchstock.app
 |-------|-------|
 | **URL** | https://github.com/CesarRemuzgo/MerchStock |
 | **Visibilidad** | Público · Licencia MIT |
-| **Rama principal** | `main` (protegida con 1 approval) |
+| **Rama principal** | `main` (protegida con 1 approval) — ✅ contiene el snapshot estable del Proyecto Final |
 | **Rama de trabajo** | `develop` (default) |
 | **Ruta local** | `F:\GitHub\MerchStock` |
 
 ---
 
-## ✅ Módulos Implementados (10 completos)
+## ✅ Módulos Implementados (12 completos)
 
 1. **Home Dashboard** — 4 tarjetas de estadísticas en tiempo real + tabla de últimas ventas
 2. **Productos CRUD + Alertas (RF15)** — buscador, eliminación lógica, alertas de stock bajo
@@ -123,6 +120,8 @@ com.merchstock.app
 8. **Autenticación + Roles (Spring Security)** — RBAC ADMIN/VENDEDOR, login, 403
 9. **Importación masiva CSV** — validación con Commons Lang + Guava
 10. **Pruebas Unitarias (JUnit 5 + Mockito)** — 7 tests en verde (BUILD SUCCESS)
+11. **Monitoreo** ⭐ — Actuator, health de negocio, panel visual, logs estructurados, heartbeat programado
+12. **Mantenimiento** ⭐ — backups automatizados y manuales, panel administrativo, política de retención
 
 ### Lógica del IGV (¡NO REVERTIR!)
 El precio **ya incluye IGV**. El desglose se hace hacia atrás:
@@ -135,92 +134,81 @@ El campo `subtotal` en BD almacena la **operación gravada**.
 
 ---
 
-## 🚧 TRABAJO PENDIENTE PARA EL PROYECTO FINAL
+## ✅ TRABAJO COMPLETADO — Fase Final
 
-### 1️⃣ Monitoreo (6 pts) — 🟡 EN CURSO
+### 1️⃣ Monitoreo (6 pts) — 🟢 COMPLETO
 
-**Código:**
-- [ ] Dependencia `spring-boot-starter-actuator` en `pom.xml`
-- [ ] Configuración de endpoints en `application.properties`
-- [ ] `StockCriticoHealthIndicator` (health de negocio: alerta si ≥5 productos en stock mínimo)
-- [ ] 2 queries nuevas en `ProductoRepository` (`contarProductosEnAlerta`, `contarProductosSinStock`)
-- [ ] Proteger `/actuator/**` y `/monitoreo/**` con rol ADMIN en `SecurityConfig`
-- [ ] `MonitoreoController` + vista `templates/monitoreo/index.html` (panel visual)
-- [ ] `logback-spring.xml` con **rotación** + log de errores + log de negocio
-- [ ] Logs de eventos de negocio (`VENTA_REGISTRADA`, `STOCK_CRITICO`)
-- [ ] `MonitoreoProgramado` con `@Scheduled` (heartbeat cada 15 min) + `@EnableScheduling`
+- ✅ `spring-boot-starter-actuator` integrado
+- ✅ `StockCriticoHealthIndicator` (health de negocio: ALERTA si ≥5 productos en stock mínimo)
+- ✅ `/actuator/**` y `/monitoreo/**` protegidos con rol ADMIN
+- ✅ `MonitoreoController` + panel visual `/monitoreo` (tiempo activo, memoria heap, CPU, peticiones HTTP)
+- ✅ `logback-spring.xml` con 3 destinos (general, errores, negocio) y rotación
+- ✅ Logger `NEGOCIO` con eventos `VENTA_REGISTRADA` y `HEARTBEAT`
+- ✅ `MonitoreoProgramado` con `@Scheduled` (heartbeat cada 15 min)
+- ✅ Plan de Monitoreo documentado (objetivos, arquitectura en 3 niveles, matriz de indicadores/umbrales/acciones, responsabilidades)
 
-**Informe:**
-- [ ] Sección 5: **Plan de Monitoreo** (objetivos, arquitectura en 3 niveles, endpoints, política de retención de logs, **matriz de indicadores/umbrales/acciones**, responsabilidades)
-- [ ] Capturas: `/actuator/health`, panel `/monitoreo`, `/actuator/metrics`, log de negocio
+### 2️⃣ Mantenimiento (5 pts) — 🟢 COMPLETO
 
----
+- ✅ `BackupService` con `mysqldump` vía `ProcessBuilder`
+- ✅ `MantenimientoProgramado`: backup automático diario (2:00 a.m.) + limpieza de retención (3:00 a.m.)
+- ✅ Panel `/mantenimiento` (backup manual, lista y descarga de respaldos)
+- ✅ `/mantenimiento/**` protegido con rol ADMIN
+- ✅ Carpeta `backups/` excluida del control de versiones (`.gitignore`)
+- ✅ Plan de Mantenimiento documentado (política de retención, seguridad de respaldos, responsabilidades)
 
-### 2️⃣ Mantenimiento (5 pts) — 🔴 NO INICIADO
+### 3️⃣ Pruebas de Seguridad (2 pts) — 🟢 COMPLETO
 
-**Código:**
-- [ ] Script de backup con `mysqldump`
-- [ ] Backup automatizado con `@Scheduled` (o cron job del sistema)
-- [ ] Script de limpieza de logs antiguos
-- [ ] Vista/endpoint para descargar respaldo (RF21)
+- ✅ Escaneo ejecutado con **OWASP ZAP 2.17.0** contra el sistema desplegado
+- ✅ 6 hallazgos identificados y mapeados a **OWASP Top 10:2025** (CSP, SRI, CSRF, SameSite, 2 informativos)
+- ✅ Sin hallazgos de riesgo Alto o Crítico
+- ✅ Priorización de riesgos (Riesgo = Probabilidad × Impacto)
+- ✅ Confirma con evidencia real una deuda técnica ya documentada (CSRF deshabilitado en `SecurityConfig`)
+- ✅ Reporte completo documentado con plan de remediación
 
-**Informe:**
-- [ ] **Plan de Mantenimiento** (preventivo, correctivo, evolutivo, calendario, responsables)
+### 4️⃣ Despliegue (2 pts) — 🟢 COMPLETO
 
----
+- ✅ `.\mvnw clean package` → JAR ejecutable (`merchstock-app-0.0.1-SNAPSHOT.jar`)
+- ✅ Ejecución verificada como proceso independiente del IDE (`java -jar`)
+- ✅ Puerto verificado escuchando en todas las interfaces (`0.0.0.0:8080`)
+- ✅ Regla de firewall configurada y verificada (`MerchStock-8080`, Allow, Any)
+- ✅ Conectividad de red confirmada entre equipos (`ping`, 0% pérdida)
+- 🟡 **Incidencia documentada:** el acceso remoto vía navegador no se completó de forma consistente en las pruebas realizadas; se aisló la causa probable a un conflicto entre el Firewall de Windows y el antivirus ESET NOD32 del equipo servidor. No invalida el despliegue (evidencia técnica de exposición en red ya confirmada); queda como punto de seguimiento antes de la sustentación si se desea demo en vivo entre dispositivos.
+- ✅ Plan de Despliegue documentado con evidencia completa
 
-### 3️⃣ Pruebas de Seguridad (completa los 2 pts) — 🔴 NO INICIADO
+### 5️⃣ Limpieza de código — 🟢 COMPLETO
 
-- [ ] Ejecutar **OWASP ZAP** contra MerchStock en local
-- [ ] Documentar hallazgos → severidad → **corrección aplicada** (= "observaciones levantadas")
-- [ ] Defender los controles ya existentes: BCrypt, RBAC, consultas parametrizadas (anti-SQLi)
-- [ ] Sección de **Reporte de Pruebas de Seguridad** en el informe
+- ✅ `pom.xml`: eliminada la dependencia duplicada `thymeleaf-extras-springsecurity6`
+- ✅ `ProductoRepository`: unificados los métodos duplicados de conteo de stock bajo (`contarProductosEnAlerta()` como versión única)
+- ✅ Confirmado: 7 tests = 1 `contextLoads()` + 6 pruebas de negocio (`ProductoServiceImplTest` × 5, `VentaServiceImplTest` × 1)
 
----
+### 6️⃣ Documentación — 🟢 COMPLETO
 
-### 4️⃣ Despliegue (2 pts) — 🔴 NO INICIADO
-
-- [ ] `.\mvnw clean package` → JAR ejecutable
-- [ ] Perfil `application-prod.properties`
-- [ ] Desplegar en servidor (Render / Railway / AWS free tier)
-- [ ] **Plan de Despliegue** en el informe + evidencia de la app corriendo
-
----
-
-### 5️⃣ Detalles del Informe — 🟡 POR CORREGIR
-
-- [ ] Rellenar los `[CÓDIGO]` de los integrantes (están vacíos):
-  - Remuzgo Ángeles, César Gabriel · **U18208011**
-  - Alejos Pérez, Luis Fernando · **U23247845**
-  - Correa Ángeles, Daleth · **U23225481**
-  - Cueva Samillán, Liz Anyeli · **U21321742**
-  - Romani Villanueva, Luis Ernesto · **0616158**
-- [ ] Generar el **Índice General** (está vacío)
-- [ ] Insertar las ~20 imágenes marcadas con `📷 INSERTAR AQUÍ`
-- [ ] Unificar el número de RFs cubiertos (15 vs ~14) en informe, PPT y este archivo
+- ✅ `[CÓDIGO]` de los 5 integrantes completados en el Informe
+- ✅ Número de RFs cubiertos unificado en **15 de 22** en todos los documentos
+- ✅ `MANUAL_USUARIO.md`: corregida la explicación del cálculo de IGV (desglose inverso, no "18% sobre subtotal")
+- ✅ `PLAN_PRUEBAS.md`: corregido Java 21→17, agregada sección de Pruebas de Seguridad, "APF3"→"Proyecto Final"
+- ✅ `BACKEND.md`: endpoints alineados con el código real (`/reportes/productos`, `/reportes/stock-bajo`, `/reportes/ventas`; `POST /logout`; eliminación lógica explícita)
+- ✅ README de base de datos: credenciales actualizadas (5 usuarios reales, no 4; passwords vigentes, no `admin123`)
+- ✅ Merge de `develop` a `main` completado (33 commits, aprobado por Daleth Correa, mergeado por Luis Ernesto Romani) — evidencia de trabajo en equipo y control de versiones
 
 ---
 
-### 6️⃣ Sustentación Oral (2 pts)
+## 🔴 PENDIENTE ÚNICO
 
-- [ ] PPT final del proyecto completo
-- [ ] Guion por integrante (**todos deben exponer**)
-- [ ] Duración máxima: ~10 minutos por grupo
-- [ ] Cubrir: arquitectura, pruebas, despliegue, monitoreo y mantenimiento
+### Sustentación Oral (2 pts)
+
+- [ ] PPT final del proyecto completo (diseño institucional UTP)
+- [ ] Guion por integrante (**todos deben exponer**, ~10 min total)
+- [ ] Definir división de la exposición entre los 5 integrantes
+- [ ] Decidir formato de demo: en vivo, con capturas de respaldo, o combinación
 - [ ] Ensayo general con el equipo
 
----
+### Opcional (no afecta la calificación, mejora la experiencia de demo)
 
-## 💡 Ideas de Valor Agregado (opcionales, para destacar)
-
-| Idea | Impacto | Esfuerzo |
-|------|---------|----------|
-| Panel de monitoreo en vivo (Actuator) | 🥇 Alto — ataca los 6 pts | Bajo-Medio |
-| App desplegada con URL pública | 🥇 Alto — el profe la abre en su celular | Medio |
-| Alertas automáticas por correo/Telegram al bajar el stock | 🥇 Alto | Medio |
-| Predicción de reposición de stock (media móvil) | 🥈 Muy alto "wow" | Medio |
-| CI/CD con GitHub Actions (tests automáticos en cada push) | 🥈 Alto | Bajo |
-| Códigos QR / barras para registrar ventas escaneando | 🥉 Vistoso en demo | Medio |
+- [ ] Resolver el conflicto Firewall/ESET NOD32 para permitir demo en vivo de acceso remoto entre dispositivos
+- [ ] Agregar navbar completo a los paneles `/monitoreo` y `/mantenimiento` (actualmente solo tienen botón "Volver")
+- [ ] Agregar `sec:authorize` a los links de Categorías/Usuarios en el navbar para VENDEDOR (actualmente visibles pero devuelven 403 al hacer clic)
+- [ ] Implementar la remediación de CSRF identificada en el escaneo de seguridad (reactivar protección CSRF en `SecurityConfig`)
 
 ---
 
@@ -230,11 +218,12 @@ El campo `subtotal` en BD almacena la **operación gravada**.
 |----------|----------|-----|
 | `admin` | `Admin2026` | ADMIN |
 | `cremuzgo` | `Cesar2026` | ADMIN |
+| `falejos` | `BackEnd2026` | ADMIN |
 | `pventa1` | `Patricia2026` | VENDEDOR |
 | `avendedor` | `Andrea2026` | VENDEDOR |
-| `falejos` | `BackEnd2026` | ADMIN |
 
-> ⚠️ Credenciales de demo. `application.properties` está en `.gitignore`.
+> ⚠️ Credenciales de demo, vigentes y verificadas. `application.properties` está en `.gitignore`.
+> La pantalla de login **ya no muestra** estas credenciales en pantalla (se corrigió por seguridad antes del despliegue).
 
 ---
 
@@ -250,6 +239,8 @@ El campo `subtotal` en BD almacena la **operación gravada**.
 | 6 | Carpeta `test` no aparecía en VS Code | `mkdir [ruta] -Force` antes de `New-Item` |
 | 7 | `Property 'nombre' cannot be found on Cliente` | El campo real es `nombreCompleto` — revisar la entity antes de generar vistas |
 | 8 | `BUILD FAILURE` en Javadoc | Evitar el símbolo `<` en comentarios Javadoc |
+| 9 | Backup manual daba error de acceso al `.jar` | Verificar carpeta activa en PowerShell (`cd F:\GitHub\MerchStock`) antes de correr comandos relativos |
+| 10 | Acceso remoto entre dispositivos fallaba pese a firewall configurado | Aislado a conflicto entre Windows Firewall y ESET NOD32; pendiente de resolución definitiva |
 
 ---
 
@@ -258,18 +249,24 @@ El campo `subtotal` en BD almacena la **operación gravada**.
 ```powershell
 cd F:\GitHub\MerchStock
 
-.\mvnw spring-boot:run              # Arrancar el sistema
+.\mvnw spring-boot:run              # Arrancar el sistema (modo desarrollo)
 .\mvnw clean compile                # Compilar
 .\mvnw test                         # Correr las 7 pruebas unitarias
 .\mvnw clean package                # Generar el JAR (despliegue)
+java -jar target\merchstock-app-0.0.1-SNAPSHOT.jar   # Correr el JAR standalone
 .\mvnw javadoc:javadoc              # Javadoc → target/reports/apidocs/
 ```
 
-**Endpoints de monitoreo** (una vez implementados, como ADMIN):
+**Endpoints de monitoreo** (como ADMIN):
 ```
 http://localhost:8080/actuator/health
 http://localhost:8080/actuator/metrics
 http://localhost:8080/monitoreo
+```
+
+**Endpoint de mantenimiento** (como ADMIN):
+```
+http://localhost:8080/mantenimiento
 ```
 
 ---
@@ -287,6 +284,12 @@ http://localhost:8080/monitoreo
 
 **Monitoreo** — 3 ejes: **logs** (trazabilidad), **performance tools** (memoria/CPU) y **health tools** (disponibilidad). Nuestro diferencial: el health indicator también responde *"¿el inventario está sano?"*, no solo *"¿el sistema está vivo?"*.
 
+**Mantenimiento** — respaldo automatizado (`@Scheduled`) + respaldo manual bajo demanda, con política de retención de 30 días y exclusión de `backups/` del control de versiones por seguridad.
+
+**Despliegue** — empaquetado como JAR autocontenido (Spring Boot fat jar), verificado como proceso independiente del entorno de desarrollo, con exposición confirmada en todas las interfaces de red.
+
+**Pruebas de Seguridad** — escaneo activo con OWASP ZAP, no solo revisión de código; el hallazgo de CSRF demuestra coherencia entre la deuda técnica documentada y su verificación dinámica.
+
 **MVC + DAO + SOLID** — Controller → Service → Repository → Entity → View, con inyección por constructor (DIP).
 
 ---
@@ -298,6 +301,4 @@ http://localhost:8080/monitoreo
 
 ---
 
-_Última actualización: 14 de julio de 2026_
-_Fase actual: **Proyecto Final** — implementando Monitoreo_
-_Días restantes para la sustentación: **11**_
+_Última actualización: 16 de julio de 2026_

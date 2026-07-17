@@ -26,7 +26,7 @@ Conectar a tu instancia local de MySQL (`localhost:3306`) con tu usuario `root`.
 1. Abrir el archivo `02-seed-data.sql` en MySQL Workbench
 2. Ejecutar con `Ctrl + Shift + Enter`
 3. Verificar el resultado:
-   - 4 usuarios
+   - 5 usuarios
    - 8 categorias
    - 16 productos
 
@@ -43,21 +43,22 @@ SELECT COUNT(*) AS productos  FROM productos;
 ```
 
 Resultado esperado:
-- usuarios: 4
+- usuarios: 5
 - categorias: 8
 - productos: 16
 
 ## 🔐 Usuarios iniciales
 
-| Username   | Password    | Rol       |
-|------------|-------------|-----------|
-| admin      | admin123    | ADMIN     |
-| cremuzgo   | admin123    | ADMIN     |
-| pventa1    | admin123    | VENDEDOR  |
-| avendedor  | admin123    | VENDEDOR  |
+| Username    | Password      | Rol       |
+|-------------|---------------|-----------|
+| admin       | Admin2026     | ADMIN     |
+| cremuzgo    | Cesar2026     | ADMIN     |
+| falejos     | BackEnd2026   | ADMIN     |
+| pventa1     | Patricia2026  | VENDEDOR  |
+| avendedor   | Andrea2026    | VENDEDOR  |
 
-*Nota: los passwords estan hasheados con BCrypt. Para que funcione el login*
-*real, hay que actualizarlos en la siguiente iteracion del proyecto.*
+*Nota: los passwords estan hasheados con BCrypt en la base de datos (nunca en texto plano).*
+*Estas son las credenciales vigentes, ya verificadas y funcionando en el sistema desplegado.*
 
 ## 🏗️ Estructura de las 7 tablas
 
@@ -75,6 +76,9 @@ Resultado esperado:
   de la defensa en 3 capas (SQL + Service + UI) para evitar stock negativo.
 - Todos los nombres usan `snake_case` (convencion SQL).
 - Las foreign keys usan `ON DELETE CASCADE` solo en `venta_detalle`.
+- La carpeta de respaldos automaticos y manuales (`backups/`) se genera con
+  `mysqldump` y esta excluida del control de versiones (`.gitignore`), ya
+  que contiene datos reales de clientes, ventas y usuarios.
 
 ## 🔄 Resetear la BD
 
