@@ -8,20 +8,25 @@ import com.merchstock.app.exception.ResourceNotFoundException;
 import com.merchstock.app.service.ClienteService;
 import com.merchstock.app.service.ProductoService;
 import com.merchstock.app.service.UsuarioService;
+import com.merchstock.app.service.VentaPdfService;
 import com.merchstock.app.service.VentaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 /**
  * Controlador MVC para la gestion de Ventas.
  *
@@ -36,6 +41,7 @@ import java.util.stream.Collectors;
 public class VentaController {
 
     private final VentaService ventaService;
+    private final VentaPdfService ventaPdfService;
     private final ProductoService productoService;
     private final ClienteService clienteService;
     private final UsuarioService usuarioService;
@@ -106,6 +112,30 @@ public class VentaController {
         }
     }
 
+    /**
+     * Descarga el PDF de la boleta/comprobante de una venta.
+     */
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> descargarBoletaPdf(@PathVariable Long id) throws IOException {
+        log.info("Descargando boleta PDF de la venta {}", id);
+
+        Venta venta = ventaService.buscarPorId(id);
+        byte[] pdfBytes = ventaPdfService.generarBoletaPdf(venta);
+
+        String nombreArchivo = "MerchStock_Boleta_" + venta.getCodigoVenta() + ".pdf";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", nombreArchivo);
+        headers.setContentLength(pdfBytes.length);
+
+        log.info("Enviando boleta PDF: {} ({} bytes)", nombreArchivo, pdfBytes.length);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
+    
     /**
      * Anular una venta
      */
