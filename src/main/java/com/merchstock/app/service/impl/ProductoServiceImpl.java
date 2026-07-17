@@ -143,7 +143,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public long contarProductosConStockBajo() {
-        return productoRepository.countProductosConStockBajo();
+        return productoRepository.contarProductosEnAlerta();
     }
 
     @Override
