@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Producto - MerchStock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --navy: #1F3864; }
+        body { background-color: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+        .bg-navy { background-color: var(--navy) !important; }
+        .navbar-brand { font-weight: 700; color: white !important; }
+        .card-header-navy { background-color: var(--navy); color: white; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-navy navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}"><i class="bi bi-box-seam"></i> MerchStock</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/ventas}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/reportes}">Reportes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/monitoreo}">
+                            <i class="bi bi-activity"></i> Monitoreo
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/mantenimiento}">
+                            <i class="bi bi-hdd-stack"></i> Mantenimiento
+                        </a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        <span sec:authentication="name">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <span class="dropdown-item-text small text-muted">
+                                <i class="bi bi-shield-check"></i> Sesion activa
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+
+    <div th:if="${mensajeError}" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${mensajeError}"></span>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header card-header-navy">
+            <h4 class="mb-0">
+                <i class="bi bi-box-seam"></i>
+                <span th:text="${modo == 'nuevo'} ? 'Nuevo Producto' : 'Editar Producto'">Producto</span>
+            </h4>
+        </div>
+        <div class="card-body">
+
+            <form th:action="${modo == 'nuevo'} ? @{/productos} : @{/productos/{id}(id=${producto.id})}"
+                  th:object="${producto}" method="post" novalidate>
+
+                <div class="row g-3">
+
+                    <!-- SKU -->
+                    <div class="col-md-4">
+                        <label class="form-label">SKU <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" th:field="*{sku}"
+                               th:readonly="${modo == 'editar'}"
+                               placeholder="Ej: TAZ-001"
+                               th:classappend="${#fields.hasErrors('sku')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{sku}">Error</div>
+                    </div>
+
+                    <!-- Nombre -->
+                    <div class="col-md-8">
+                        <label class="form-label">Nombre <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" th:field="*{nombre}"
+                               placeholder="Ej: Taza Ceramica Blanca 11oz"
+                               th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{nombre}">Error</div>
+                    </div>
+
+                    <!-- Descripcion -->
+                    <div class="col-12">
+                        <label class="form-label">Descripci&oacute;n</label>
+                        <textarea class="form-control" th:field="*{descripcion}" rows="2"
+                                  placeholder="Detalles del producto..."></textarea>
+                    </div>
+
+                    <!-- Categoria -->
+                    <div class="col-md-6">
+                        <label class="form-label">Categor&iacute;a <span class="text-danger">*</span></label>
+                        <select class="form-select" th:field="*{categoria}"
+                                th:classappend="${#fields.hasErrors('categoria')} ? 'is-invalid' : ''">
+                            <option value="">-- Seleccionar --</option>
+                            <option th:each="cat : ${categorias}"
+                                    th:value="${cat.id}"
+                                    th:text="${cat.nombre}">Categoria</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{categoria}">Error</div>
+                    </div>
+
+                    <!-- Unidad medida -->
+                    <div class="col-md-6">
+                        <label class="form-label">Unidad de medida</label>
+                        <input type="text" class="form-control" th:field="*{unidadMedida}"
+                               placeholder="unidad, kg, litro...">
+                    </div>
+
+                    <!-- Precio compra -->
+                    <div class="col-md-4">
+                        <label class="form-label">Precio Compra (S/) <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" min="0" class="form-control"
+                               th:field="*{precioCompra}"
+                               th:classappend="${#fields.hasErrors('precioCompra')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{precioCompra}">Error</div>
+                    </div>
+
+                    <!-- Precio venta -->
+                    <div class="col-md-4">
+                        <label class="form-label">Precio Venta (S/) <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" min="0" class="form-control"
+                               th:field="*{precioVenta}"
+                               th:classappend="${#fields.hasErrors('precioVenta')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{precioVenta}">Error</div>
+                    </div>
+
+                    <!-- Stock minimo -->
+                    <div class="col-md-4">
+                        <label class="form-label">Stock M&iacute;nimo <span class="text-danger">*</span></label>
+                        <input type="number" min="0" class="form-control" th:field="*{stockMinimo}"
+                               th:classappend="${#fields.hasErrors('stockMinimo')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{stockMinimo}">Error</div>
+                        <small class="text-muted">Alerta cuando el stock sea menor o igual a este valor</small>
+                    </div>
+
+                    <!-- Stock actual (solo para productos nuevos) -->
+                    <div class="col-md-4" th:if="${modo == 'nuevo'}">
+                        <label class="form-label">Stock Inicial <span class="text-danger">*</span></label>
+                        <input type="number" min="0" class="form-control" th:field="*{stockActual}"
+                               th:classappend="${#fields.hasErrors('stockActual')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{stockActual}">Error</div>
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-end gap-2">
+                    <a th:href="@{/productos}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i>
+                        <span th:text="${modo == 'nuevo'} ? 'Guardar' : 'Actualizar'">Guardar</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<footer class="bg-navy text-white text-center py-3 mt-5">
+    <small>&copy; 2026 MerchStock - APF3 - Grupo 3 - UTP 2026</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

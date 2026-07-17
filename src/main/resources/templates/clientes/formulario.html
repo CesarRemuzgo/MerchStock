@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cliente - MerchStock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --navy: #1F3864; }
+        body { background-color: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+        .bg-navy { background-color: var(--navy) !important; }
+        .navbar-brand { font-weight: 700; color: white !important; }
+        .card-header-navy { background-color: var(--navy); color: white; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-navy navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}"><i class="bi bi-box-seam"></i> MerchStock</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/ventas}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/reportes}">Reportes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/monitoreo}">
+                            <i class="bi bi-activity"></i> Monitoreo
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/mantenimiento}">
+                            <i class="bi bi-hdd-stack"></i> Mantenimiento
+                        </a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        <span sec:authentication="name">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <span class="dropdown-item-text small text-muted">
+                                <i class="bi bi-shield-check"></i> Sesion activa
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+
+    <div th:if="${mensajeError}" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${mensajeError}"></span>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header card-header-navy">
+            <h4 class="mb-0">
+                <i class="bi bi-person"></i>
+                <span th:text="${modo == 'nuevo'} ? 'Nuevo Cliente' : 'Editar Cliente'">Cliente</span>
+            </h4>
+        </div>
+        <div class="card-body">
+
+            <form th:action="${modo == 'nuevo'} ? @{/clientes} : @{/clientes/{id}(id=${cliente.id})}"
+                  th:object="${cliente}" method="post" novalidate>
+
+                <div class="row g-3">
+
+                    <!-- Tipo Documento -->
+                    <div class="col-md-3">
+                        <label class="form-label">Tipo Doc. <span class="text-danger">*</span></label>
+                        <select class="form-select" th:field="*{tipoDocumento}">
+                            <option th:each="tipo : ${tiposDocumento}"
+                                    th:value="${tipo}"
+                                    th:text="${tipo}">DNI</option>
+                        </select>
+                    </div>
+
+                    <!-- Numero Documento -->
+                    <div class="col-md-4">
+                        <label class="form-label">N&uacute;mero <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" th:field="*{numeroDocumento}"
+                               placeholder="Ej: 12345678"
+                               th:classappend="${#fields.hasErrors('numeroDocumento')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{numeroDocumento}">Error</div>
+                    </div>
+
+                    <!-- Nombre Completo -->
+                    <div class="col-md-5">
+                        <label class="form-label">Nombre Completo <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" th:field="*{nombreCompleto}"
+                               placeholder="Nombres y apellidos"
+                               th:classappend="${#fields.hasErrors('nombreCompleto')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{nombreCompleto}">Error</div>
+                    </div>
+
+                    <!-- Telefono -->
+                    <div class="col-md-4">
+                        <label class="form-label">Tel&eacute;fono</label>
+                        <input type="text" class="form-control" th:field="*{telefono}"
+                               placeholder="999 888 777">
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-8">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" th:field="*{email}"
+                               placeholder="cliente@email.com"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{email}">Error</div>
+                    </div>
+
+                    <!-- Direccion -->
+                    <div class="col-12">
+                        <label class="form-label">Direcci&oacute;n</label>
+                        <textarea class="form-control" th:field="*{direccion}" rows="2"
+                                  placeholder="Direccion completa..."></textarea>
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a th:href="@{/clientes}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i>
+                        <span th:text="${modo == 'nuevo'} ? 'Guardar' : 'Actualizar'">Guardar</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<footer class="bg-navy text-white text-center py-3 mt-5">
+    <small>&copy; 2026 MerchStock - APF3 - Grupo 3 - UTP 2026</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

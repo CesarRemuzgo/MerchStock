@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Alertas de Stock - MerchStock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --navy: #1F3864; }
+        body { background-color: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+        .bg-navy { background-color: var(--navy) !important; }
+        .navbar-brand { font-weight: 700; color: white !important; }
+        .table thead { background-color: var(--navy); color: white; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-navy navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}"><i class="bi bi-box-seam"></i> MerchStock</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/ventas}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/reportes}">Reportes</a></li>
+                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/productos/alertas}">Alertas</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/monitoreo}">
+                            <i class="bi bi-activity"></i> Monitoreo
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/mantenimiento}">
+                            <i class="bi bi-hdd-stack"></i> Mantenimiento
+                        </a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        <span sec:authentication="name">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <span class="dropdown-item-text small text-muted">
+                                <i class="bi bi-shield-check"></i> Sesion activa
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0"><i class="bi bi-bell-fill text-danger"></i> Alertas de Stock</h2>
+            <small class="text-muted">Productos que requieren reabastecimiento (RF15)</small>
+        </div>
+        <a th:href="@{/productos}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a Productos
+        </a>
+    </div>
+
+    <!-- Productos sin stock -->
+    <div class="card shadow-sm mb-4 border-danger" th:if="${not #lists.isEmpty(productosSinStock)}">
+        <div class="card-header bg-danger text-white">
+            <i class="bi bi-x-octagon-fill"></i> Productos SIN STOCK
+            (<span th:text="${#lists.size(productosSinStock)}">0</span>)
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Nombre</th>
+                            <th class="text-center">Stock</th>
+                            <th class="text-center">Acci&oacute;n</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="prod : ${productosSinStock}">
+                            <td><code th:text="${prod.sku}">SKU</code></td>
+                            <td th:text="${prod.nombre}">Nombre</td>
+                            <td class="text-center">
+                                <span class="badge bg-danger fs-6" th:text="${prod.stockActual}">0</span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/productos/{id}/editar(id=${prod.id})}"
+                                   class="btn btn-sm btn-warning">
+                                    <i class="bi bi-arrow-up-circle"></i> Reabastecer
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos con stock bajo -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <i class="bi bi-exclamation-triangle-fill"></i> Productos con STOCK BAJO
+            (<span th:text="${#lists.size(productos)}">0</span>)
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Nombre</th>
+                            <th class="text-center">Stock Actual</th>
+                            <th class="text-center">Stock M&iacute;nimo</th>
+                            <th class="text-center">Acci&oacute;n</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(productos)}">
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0">No hay productos con stock bajo. Todo en orden.</p>
+                            </td>
+                        </tr>
+                        <tr th:each="prod : ${productos}">
+                            <td><code th:text="${prod.sku}">SKU</code></td>
+                            <td th:text="${prod.nombre}">Nombre</td>
+                            <td class="text-center fw-bold text-danger" th:text="${prod.stockActual}">0</td>
+                            <td class="text-center" th:text="${prod.stockMinimo}">5</td>
+                            <td class="text-center">
+                                <a th:href="@{/productos/{id}/editar(id=${prod.id})}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i> Ver / Reabastecer
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer class="bg-navy text-white text-center py-3 mt-5">
+    <small>&copy; 2026 MerchStock - APF3 - Grupo 3 - UTP 2026</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

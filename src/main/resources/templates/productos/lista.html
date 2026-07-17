@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos - MerchStock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --navy: #1F3864; --teal: #2E8B7A; }
+        body { background-color: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+        .bg-navy { background-color: var(--navy) !important; }
+        .navbar-brand { font-weight: 700; color: white !important; }
+        .table thead { background-color: var(--navy); color: white; }
+        .badge-stock-bajo { background-color: #dc3545; }
+        .badge-stock-ok { background-color: var(--teal); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-navy navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}"><i class="bi bi-box-seam"></i> MerchStock</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/ventas}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/reportes}">Reportes</a></li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" th:href="@{/productos/alertas}">
+                        Alertas
+                        <span th:if="${totalAlertas != null and totalAlertas > 0}"
+                            class="badge bg-danger" th:text="${totalAlertas}">0</span>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link text-white" th:href="@{/monitoreo}">
+                        <i class="bi bi-activity"></i> Monitoreo
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link text-white" th:href="@{/mantenimiento}">
+                        <i class="bi bi-hdd-stack"></i> Mantenimiento
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        <span sec:authentication="name">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <span class="dropdown-item-text small text-muted">
+                                <i class="bi bi-shield-check"></i> Sesion activa
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+
+    <!-- Mensajes -->
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill"></i> <span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0"><i class="bi bi-grid-3x3-gap"></i> Productos</h2>
+            <small class="text-muted">Cat&aacute;logo de productos MerchStock</small>
+        </div>
+        <div class="d-flex gap-2">
+            <a th:href="@{/productos/importar}" class="btn text-white" style="background-color: var(--teal);">
+                <i class="bi bi-upload"></i> Importar CSV
+            </a>
+            <a th:href="@{/productos/nuevo}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Producto
+            </a>
+        </div>
+    </div>
+
+    <!-- Busqueda -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form th:action="@{/productos}" method="get" class="row g-3">
+                <div class="col-md-10">
+                    <input type="text" name="buscar" class="form-control"
+                           placeholder="Buscar productos por nombre..."
+                           th:value="${buscar}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de productos -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Nombre</th>
+                            <th>Categor&iacute;a</th>
+                            <th class="text-end">P. Venta</th>
+                            <th class="text-center">Stock</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(productos)}">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0">No hay productos registrados</p>
+                            </td>
+                        </tr>
+                        <tr th:each="prod : ${productos}">
+                            <td><code th:text="${prod.sku}">SKU-001</code></td>
+                            <td th:text="${prod.nombre}">Nombre</td>
+                            <td>
+                                <span class="badge bg-secondary"
+                                      th:text="${prod.categoria != null ? prod.categoria.nombre : '-'}">
+                                    Categoria
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                S/ <span th:text="${#numbers.formatDecimal(prod.precioVenta, 1, 2)}">0.00</span>
+                            </td>
+                            <td class="text-center fw-bold" th:text="${prod.stockActual}">0</td>
+                            <td class="text-center">
+                                <span th:if="${prod.stockActual <= prod.stockMinimo}" class="badge badge-stock-bajo">
+                                    <i class="bi bi-exclamation-triangle"></i> Stock bajo
+                                </span>
+                                <span th:unless="${prod.stockActual <= prod.stockMinimo}" class="badge badge-stock-ok">
+                                    <i class="bi bi-check-circle"></i> OK
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/productos/{id}/editar(id=${prod.id})}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/productos/{id}/eliminar(id=${prod.id})}"
+                                      method="post" style="display:inline;"
+                                      onsubmit="return confirm('Eliminar producto?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-muted small mt-3">
+        Total: <span th:text="${#lists.size(productos)}">0</span> productos
+    </div>
+
+</div>
+
+<footer class="bg-navy text-white text-center py-3 mt-5">
+    <small>&copy; 2026 MerchStock - APF3 - Grupo 3 - UTP 2026</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

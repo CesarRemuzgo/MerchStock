@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>MerchStock - Inicio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --navy: #1F3864; --steel-blue: #4472C4; --teal: #2E8B7A; }
+        body { background-color: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+        .bg-navy { background-color: var(--navy) !important; }
+        .navbar-brand { font-weight: 700; color: white !important; }
+        .card-icon { font-size: 3rem; }
+        .text-teal { color: var(--teal); }
+        .text-navy { color: var(--navy); }
+        .stat-card { border: none; border-radius: 12px; transition: transform 0.15s ease-in-out; }
+        .stat-card:hover { transform: translateY(-4px); }
+        .stat-icon { font-size: 2.2rem; opacity: 0.85; }
+        .stat-number { font-size: 2rem; font-weight: 700; line-height: 1; }
+        .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-navy navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="bi bi-box-seam"></i> MerchStock
+        </a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/ventas}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/reportes}">Reportes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link text-white" th:href="@{/monitoreo}">
+                        <i class="bi bi-activity"></i> Monitoreo
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link text-white" th:href="@{/mantenimiento}">
+                        <i class="bi bi-hdd-stack"></i> Mantenimiento
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        <span sec:authentication="name">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <span class="dropdown-item-text small text-muted">
+                                <i class="bi bi-shield-check"></i> Sesion activa
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="text-navy fw-bold">
+                <i class="bi bi-speedometer2"></i> Panel de Control
+            </h1>
+            <p class="text-muted">Administraci&oacute;n de Inventario para MerchStock Per&uacute; E.I.R.L.</p>
+        </div>
+    </div>
+
+    <!-- ===== FILA DE ESTADISTICAS ===== -->
+    <div class="row g-3 mb-4">
+        <!-- Total productos -->
+        <div class="col-md-3 col-6">
+            <div class="card stat-card shadow-sm text-white" style="background-color: var(--navy);">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-number" th:text="${totalProductos}">0</div>
+                        <div class="stat-label">Productos</div>
+                    </div>
+                    <i class="bi bi-grid-3x3-gap stat-icon"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Alertas de stock -->
+        <div class="col-md-3 col-6">
+            <div class="card stat-card shadow-sm text-white" style="background-color: #c0392b;">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-number" th:text="${totalAlertas}">0</div>
+                        <div class="stat-label">Stock Bajo</div>
+                    </div>
+                    <i class="bi bi-bell-fill stat-icon"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Ventas de hoy -->
+        <div class="col-md-3 col-6">
+            <div class="card stat-card shadow-sm text-white" style="background-color: var(--steel-blue);">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-number" th:text="${ventasHoy}">0</div>
+                        <div class="stat-label">Ventas Hoy</div>
+                    </div>
+                    <i class="bi bi-cart-check stat-icon"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Ingresos de hoy -->
+        <div class="col-md-3 col-6">
+            <div class="card stat-card shadow-sm text-white" style="background-color: var(--teal);">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-number">S/<span th:text="${#numbers.formatDecimal(ingresosHoy, 1, 2)}">0.00</span></div>
+                        <div class="stat-label">Ingresos Hoy</div>
+                    </div>
+                    <i class="bi bi-cash-coin stat-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CARDS DE MODULOS ===== -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-grid-3x3-gap card-icon text-navy"></i>
+                    <h4 class="mt-3">Productos</h4>
+                    <p class="text-muted small">Gesti&oacute;n del cat&aacute;logo de productos</p>
+                    <a th:href="@{/productos}" class="btn btn-primary">Ir a Productos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-danger">
+                <div class="card-body text-center">
+                    <i class="bi bi-bell-fill card-icon text-danger"></i>
+                    <h4 class="mt-3">Alertas de Stock</h4>
+                    <p class="text-muted small">
+                        <span th:text="${totalAlertas}" class="fw-bold fs-5">0</span>
+                        productos con stock bajo
+                    </p>
+                    <a th:href="@{/productos/alertas}" class="btn btn-danger">Ver Alertas</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-cart card-icon text-teal"></i>
+                    <h4 class="mt-3">Ventas</h4>
+                    <p class="text-muted small">Registro y consulta de ventas</p>
+                    <a th:href="@{/ventas}" class="btn btn-primary">Ir a Ventas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TABLA DE VENTAS RECIENTES ===== -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-navy text-white">
+            <i class="bi bi-clock-history"></i> &Uacute;ltimas Ventas Registradas
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">C&oacute;digo</th>
+                            <th>Cliente</th>
+                            <th>Vendedor</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="venta : ${ventasRecientes}">
+                            <td class="ps-3 fw-semibold text-navy" th:text="${venta.codigoVenta}">VTA-2026-0001</td>
+                            <td th:text="${venta.cliente != null ? venta.cliente.nombreCompleto : 'Cliente general'}">Cliente</td>
+                            <td th:text="${venta.usuario != null ? venta.usuario.username : '-'}">vendedor</td>
+                            <td class="text-end fw-semibold">
+                                S/<span th:text="${#numbers.formatDecimal(venta.total, 1, 2)}">0.00</span>
+                            </td>
+                            <td class="text-center">
+                                <span th:if="${venta.estado.name() == 'COMPLETADA'}" class="badge bg-success">Completada</span>
+                                <span th:if="${venta.estado.name() == 'ANULADA'}" class="badge bg-secondary">Anulada</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${ventasRecientes == null or ventasRecientes.isEmpty()}">
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox"></i> A&uacute;n no hay ventas registradas
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer class="bg-navy text-white text-center py-3 mt-5">
+    <div class="container">
+        <small>&copy; 2026 MerchStock - APF3 - Grupo 3 - UTP 2026</small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

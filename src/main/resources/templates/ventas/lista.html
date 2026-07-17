@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ventas - MerchStock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --navy: #1F3864; --teal: #2E8B7A; }
+        body { background-color: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+        .bg-navy { background-color: var(--navy) !important; }
+        .navbar-brand { font-weight: 700; color: white !important; }
+        .table thead { background-color: var(--navy); color: white; }
+        .badge-completada { background-color: var(--teal); }
+        .badge-anulada { background-color: #dc3545; }
+        .badge-pendiente { background-color: #ffc107; color: #000; }
+        .codigo-venta { font-family: 'Courier New', monospace; font-weight: bold; color: var(--navy); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-navy navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}"><i class="bi bi-box-seam"></i> MerchStock</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link active text-white" th:href="@{/ventas}">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/reportes}">Reportes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/monitoreo}">
+                            <i class="bi bi-activity"></i> Monitoreo
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/mantenimiento}">
+                            <i class="bi bi-hdd-stack"></i> Mantenimiento
+                        </a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        <span sec:authentication="name">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <span class="dropdown-item-text small text-muted">
+                                <i class="bi bi-shield-check"></i> Sesion activa
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill"></i> <span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0"><i class="bi bi-cart-check"></i> Ventas Registradas</h2>
+            <small class="text-muted">Historial de ventas realizadas en MerchStock</small>
+        </div>
+        <a th:href="@{/ventas/nueva}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Venta
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>C&oacute;digo</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Vendedor</th>
+                            <th>M&eacute;todo</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(ventas)}">
+                            <td colspan="8" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0">No hay ventas registradas</p>
+                                <a th:href="@{/ventas/nueva}" class="btn btn-sm btn-primary mt-2">
+                                    Registrar primera venta
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:each="venta : ${ventas}">
+                            <td>
+                                <span class="codigo-venta" th:text="${venta.codigoVenta}">VTA-2026-0001</span>
+                            </td>
+                            <td th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}">
+                                07/06/2026 14:30
+                            </td>
+                            <td th:text="${venta.cliente != null ? venta.cliente.nombreCompleto : 'Cliente generico'}">
+                                Cliente
+                            </td>
+                            <td>
+                                <small th:text="${venta.usuario.username}">vendedor</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary" th:text="${venta.metodoPago}">EFECTIVO</span>
+                            </td>
+                            <td class="text-end fw-bold">
+                                S/ <span th:text="${#numbers.formatDecimal(venta.total, 1, 2)}">0.00</span>
+                            </td>
+                            <td class="text-center">
+                                <span th:if="${venta.estado == T(com.merchstock.app.entity.Venta.EstadoVenta).COMPLETADA}"
+                                      class="badge badge-completada">
+                                    <i class="bi bi-check-circle"></i> Completada
+                                </span>
+                                <span th:if="${venta.estado == T(com.merchstock.app.entity.Venta.EstadoVenta).ANULADA}"
+                                      class="badge badge-anulada">
+                                    <i class="bi bi-x-circle"></i> Anulada
+                                </span>
+                                <span th:if="${venta.estado == T(com.merchstock.app.entity.Venta.EstadoVenta).PENDIENTE}"
+                                      class="badge badge-pendiente">
+                                    <i class="bi bi-clock"></i> Pendiente
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/ventas/{id}(id=${venta.id})}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Ver detalle">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-muted small mt-3">
+        Total: <span th:text="${#lists.size(ventas)}">0</span> ventas registradas
+    </div>
+
+</div>
+
+<footer class="bg-navy text-white text-center py-3 mt-5">
+    <small>&copy; 2026 MerchStock - APF3 - Grupo 3 - UTP 2026</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

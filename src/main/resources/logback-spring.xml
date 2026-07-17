@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="RUTA_LOGS" value="logs"/>
+    <property name="PATRON" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <!-- 1. Consola -->
+    <appender name="CONSOLA" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder><pattern>${PATRON}</pattern></encoder>
+    </appender>
+
+    <!-- 2. Archivo general con ROTACION diaria (retencion 30 dias) -->
+    <appender name="ARCHIVO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${RUTA_LOGS}/merchstock.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${RUTA_LOGS}/merchstock-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder><pattern>${PATRON}</pattern></encoder>
+    </appender>
+
+    <!-- 3. Archivo exclusivo de ERRORES -->
+    <appender name="ERRORES" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${RUTA_LOGS}/merchstock-errores.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${RUTA_LOGS}/merchstock-errores-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder><pattern>${PATRON}</pattern></encoder>
+    </appender>
+
+    <!-- 4. Archivo de EVENTOS DE NEGOCIO -->
+    <appender name="NEGOCIO_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${RUTA_LOGS}/merchstock-negocio.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${RUTA_LOGS}/merchstock-negocio-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+        <encoder><pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern></encoder>
+    </appender>
+
+    <logger name="NEGOCIO" level="INFO" additivity="false">
+        <appender-ref ref="NEGOCIO_APPENDER"/>
+        <appender-ref ref="CONSOLA"/>
+    </logger>
+
+    <logger name="com.merchstock.app" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLA"/>
+        <appender-ref ref="ARCHIVO"/>
+        <appender-ref ref="ERRORES"/>
+    </root>
+
+</configuration>
