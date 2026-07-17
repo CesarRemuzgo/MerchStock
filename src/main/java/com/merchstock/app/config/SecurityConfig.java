@@ -3,6 +3,8 @@ package com.merchstock.app.config;
 import com.merchstock.app.service.impl.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -54,6 +56,20 @@ public class SecurityConfig {
         provider.setUserDetailsService(customUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
+    }
+
+    /**
+     * Maneja los fallos de login, distinguiendo entre credenciales
+     * incorrectas y cuenta bloqueada por intentos fallidos.
+     */
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return (request, response, exception) -> {
+            String destino = (exception instanceof LockedException)
+                    ? "/login?locked=true"
+                    : "/login?error=true";
+            response.sendRedirect(request.getContextPath() + destino);
+        };
     }
 
     /**
@@ -115,7 +131,7 @@ public class SecurityConfig {
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/", true)     // si OK, redirigir al home
-                .failureUrl("/login?error=true")  // si falla, volver al login con error
+                .failureHandler(authenticationFailureHandler())  // distingue error vs bloqueo
                 .permitAll()
             )
 

@@ -58,10 +58,18 @@ public class CustomUserDetailsService implements UserDetailsService {
                     "El usuario " + username + " esta inactivo");
         }
 
-        // Construir las autoridades (roles) - Spring Security requiere prefijo "ROLE_"
+       // Construir las autoridades (roles) - Spring Security requiere prefijo "ROLE_"
         List<GrantedAuthority> autoridades = Collections.singletonList(
                 new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name())
         );
+
+        // Verificar si la cuenta esta bloqueada por multiples intentos fallidos
+        boolean bloqueado = usuario.getBloqueadoHasta() != null
+                && usuario.getBloqueadoHasta().isAfter(java.time.LocalDateTime.now());
+
+        if (bloqueado) {
+            log.warn("Cuenta bloqueada temporalmente: {} hasta {}", username, usuario.getBloqueadoHasta());
+        }
 
         log.info("Usuario autenticado: {} con rol: {}", username, usuario.getRol());
 
@@ -71,7 +79,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .password(usuario.getPasswordHash())  // Hash BCrypt
                 .authorities(autoridades)
                 .accountExpired(false)
-                .accountLocked(false)
+                .accountLocked(bloqueado)
                 .credentialsExpired(false)
                 .disabled(!usuario.getActivo())
                 .build();
