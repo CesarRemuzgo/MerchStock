@@ -51,9 +51,9 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos}">Productos</a></li>
-                <li class="nav-item"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link text-white" th:href="@{/categorias}">Categorias</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/clientes}">Clientes</a></li>
-                <li class="nav-item"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link text-white" th:href="@{/usuarios}">Usuarios</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/ventas}">Ventas</a></li>
                 <li class="nav-item"><a class="nav-link active text-white" th:href="@{/reportes}">Reportes</a></li>
                 <li class="nav-item"><a class="nav-link text-white" th:href="@{/productos/alertas}">Alertas</a></li>
