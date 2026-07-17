@@ -110,12 +110,12 @@ com.merchstock.app
 
 ## ✅ Módulos Implementados (12 completos)
 
-1. **Home Dashboard** — 4 tarjetas de estadísticas en tiempo real + tabla de últimas ventas
+1. **Home Dashboard** — 4 tarjetas de estadísticas en tiempo real + tabla de últimas ventas + gráficos de ventas (7 días) y top productos (Chart.js)
 2. **Productos CRUD + Alertas (RF15)** — buscador, eliminación lógica, alertas de stock bajo
 3. **Categorías CRUD** — validación de nombre duplicado
 4. **Clientes CRUD** — DNI/RUC/CE/PASAPORTE, reactivación automática
 5. **Usuarios CRUD con BCrypt** — cost-factor 10, protección del último ADMIN
-6. **Ventas Transaccional** ⭐ — carrito JS, IGV 18%, código `VTA-YYYY-NNNN`, defensa en 3 capas, auditoría, anulación con reversa, `@Transactional`
+6. **Ventas Transaccional** ⭐ — carrito JS, IGV 18%, código `VTA-YYYY-NNNN`, defensa en 3 capas, auditoría, anulación con reversa, `@Transactional`, boleta descargable en PDF (OpenPDF)
 7. **Reportes Excel (Apache POI)** — productos, stock bajo y ventas en `.xlsx`
 8. **Autenticación + Roles (Spring Security)** — RBAC ADMIN/VENDEDOR, login, 403
 9. **Importación masiva CSV** — validación con Commons Lang + Guava
@@ -206,9 +206,15 @@ El campo `subtotal` en BD almacena la **operación gravada**.
 ### Opcional (no afecta la calificación, mejora la experiencia de demo)
 
 - [ ] Resolver el conflicto Firewall/ESET NOD32 para permitir demo en vivo de acceso remoto entre dispositivos
-- [ ] Agregar navbar completo a los paneles `/monitoreo` y `/mantenimiento` (actualmente solo tienen botón "Volver")
-- [ ] Agregar `sec:authorize` a los links de Categorías/Usuarios en el navbar para VENDEDOR (actualmente visibles pero devuelven 403 al hacer clic)
+- [x] Agregar navbar completo a los paneles `/monitoreo` y `/mantenimiento` (antes solo tenían botón "Volver")
+- [x] Agregar `sec:authorize` a los links de Categorías/Usuarios en el navbar para VENDEDOR (antes visibles pero devolvían 403 al hacer clic)
 - [ ] Implementar la remediación de CSRF identificada en el escaneo de seguridad (reactivar protección CSRF en `SecurityConfig`)
+
+### 🎁 Mejoras Extra (valor agregado, no exigidas por la rúbrica)
+
+- [x] **Bloqueo de cuenta tras intentos fallidos** — 5 intentos fallidos → bloqueo de 15 min, con reseteo al loguear con éxito. Ver `PLAN_PRUEBAS.md` sección 8.6.
+- [x] **Boleta de venta en PDF** — descarga del comprobante con OpenPDF desde `GET /ventas/{id}/pdf`, incluyendo desglose de IGV.
+- [x] **Gráficos en el Dashboard** — ventas de los últimos 7 días (línea) y top 5 productos más vendidos (barras), con Chart.js.
 
 ---
 
@@ -301,4 +307,4 @@ http://localhost:8080/mantenimiento
 
 ---
 
-_Última actualización: 16 de julio de 2026_
+_Última actualización: 17 de julio de 2026_

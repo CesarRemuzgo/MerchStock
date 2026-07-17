@@ -18,6 +18,7 @@ El núcleo del backend expone servicios optimizados con librerías de la rúbric
 * **`ProductoService`:** Gobierna el CRUD de productos. Incorpora la lógica de **Alertas de Stock Bajo**, disparando notificaciones al Dashboard en tiempo real cuando la cantidad actual es menor o igual al stock mínimo configurado.
 * **`VentaService`:** Servicio transaccional encargado de registrar los flujos de caja. Implementa un principio de *Defense in Depth* para validar el stock en múltiples niveles antes de procesar el cobro y aplicar el cálculo automático del IGV (18%, mediante desglose inverso sobre el total).
 * **`ReporteService`:** Utiliza la librería **Apache POI** para estructurar, formatear y exportar dinámicamente libros de trabajo de Excel con los datos consolidados de inventario y ventas del sistema.
+* **`VentaPdfService`:** *(Nuevo — Fase Final)* Genera el comprobante de venta en PDF utilizando **OpenPDF**, siguiendo el mismo patrón de descarga HTTP (`Content-Disposition: attachment`) que `ReporteService`.
 * **`ImportacionService`:** Emplea **Apache Commons Lang** para procesar flujos de entrada de archivos CSV, permitiendo la carga e inserción masiva de productos de merchandising directamente en la base de datos de manera segura.
 * **`BackupService`:** *(Nuevo — Fase Final)* Genera respaldos de la base de datos mediante `mysqldump` invocado desde Java (`ProcessBuilder`), y gestiona la política de retención de respaldos antiguos.
 
@@ -33,7 +34,7 @@ El enrutamiento del backend restringe y mapea el acceso mediante **Spring Securi
 * `POST /logout` : Invalida la sesión actual del usuario de forma segura (se ejecuta vía formulario, no como enlace directo).
 
 ### 📊 Módulo de Dashboard e Inventario
-* `GET /` o `GET /dashboard` : *(Acceso: ADMIN / VENDEDOR)* Procesa y carga las estadísticas en tiempo real (conteo de productos, alertas activas de stock y total de ingresos).
+* `GET /` o `GET /dashboard` : *(Acceso: ADMIN / VENDEDOR)* Procesa y carga las estadísticas en tiempo real (conteo de productos, alertas activas de stock y total de ingresos). *(Fase Final)* Adicionalmente calcula y serializa a JSON (vía Jackson `ObjectMapper`) los datos para los gráficos del panel: ventas de los últimos 7 días y el top 5 de productos más vendidos, renderizados en el cliente con **Chart.js**.
 * `GET /productos` : Muestra la lista de productos y destaca visualmente aquellos en estado crítico de stock.
 * `POST /productos/guardar` : *(Acceso: ADMIN)* Registra o actualiza un producto validando sus restricciones físicas.
 * `POST /productos/eliminar/{id}` : *(Acceso: ADMIN)* Eliminación lógica de un ítem del catálogo (el producto queda marcado como inactivo, nunca se borra físicamente de la base de datos).
@@ -41,6 +42,7 @@ El enrutamiento del backend restringe y mapea el acceso mediante **Spring Securi
 ### 🛒 Módulo Transaccional de Ventas
 * `GET /ventas/nueva` : Carga el formulario transaccional de venta.
 * `POST /ventas/procesar` : Envía el payload con el detalle de la venta para descontar stock y generar el comprobante.
+* `GET /ventas/{id}/pdf` : *(Nuevo — Fase Final)* Descarga la boleta/comprobante de la venta en formato PDF, generado con **OpenPDF** (fork libre de iText 4). Incluye datos de la empresa, cliente, vendedor, detalle de productos y el desglose de IGV (reutiliza los valores ya calculados y persistidos en la venta, sin recalcular).
 
 ### 📈 Módulo de Reportes e Importación Masiva
 * `GET /reportes/productos` : Descarga el reporte de productos generado por Apache POI (.xlsx).

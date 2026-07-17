@@ -93,11 +93,20 @@ Al ingresar al sistema verás el **Panel de Control** con la siguiente informaci
 | **Ventas del Día** | Número de ventas registradas en el día actual |
 | **Ingresos del Día** | Monto total (S/) facturado en el día actual |
 
-### 4.2 Tabla de últimas ventas
+### 4.2 Gráficos del panel
 
-Debajo de las tarjetas se muestra una tabla con las ventas más recientes, incluyendo el código de venta, fecha, cliente, vendedor y estado.
+Debajo de las tarjetas de estadísticas encontrarás dos gráficos:
 
-### 4.3 Barra de navegación
+- **Ventas de los Últimos 7 Días** — un gráfico de línea que muestra el monto total vendido (S/) cada día de la última semana. Los días sin ventas se muestran en cero.
+- **Top 5 Productos Más Vendidos** — un gráfico de barras con los cinco productos con mayor cantidad de unidades vendidas (histórico completo del sistema).
+
+Ambos gráficos se actualizan automáticamente cada vez que ingresas al Panel de Control, reflejando la información más reciente registrada en el sistema.
+
+### 4.3 Tabla de últimas ventas
+
+Debajo de los gráficos se muestra una tabla con las ventas más recientes, incluyendo el código de venta, fecha, cliente, vendedor y estado.
+
+### 4.4 Barra de navegación
 
 En la parte superior de todas las pantallas encontrarás la barra de navegación con los siguientes accesos:
 
@@ -299,7 +308,19 @@ Al completarse, el sistema genera automáticamente un **código único** con el 
 
 En la lista de ventas, haz clic en **Ver Detalle** para acceder a la pantalla de detalle, que muestra todos los productos incluidos, cantidades, precios unitarios, IGV y total.
 
-### 9.4 Anular una venta
+### 9.4 Descargar la boleta en PDF
+
+Desde la pantalla de detalle de una venta, haz clic en el botón **Descargar PDF** (junto a "Volver"). El sistema generará automáticamente un comprobante en formato PDF con:
+
+- Los datos de la empresa (MerchStock Perú E.I.R.L.)
+- El código de venta, fecha y método de pago
+- Los datos del cliente y del vendedor
+- El detalle de productos vendidos (SKU, cantidad, precio unitario y subtotal)
+- El desglose de IGV (Operación Gravada, IGV 18% y Total)
+
+El archivo se descargará con el nombre `MerchStock_Boleta_VTA-AAAA-NNNN.pdf`, listo para imprimir o enviar al cliente.
+
+### 9.5 Anular una venta
 
 Desde la pantalla de detalle de una venta, el administrador puede **Anular** la venta. Al anularla, el sistema revierte automáticamente el stock de todos los productos involucrados.
 
@@ -437,7 +458,7 @@ Si intentas realizar una acción para la que no tienes permiso, el sistema te mo
 | Campo | Valor |
 |-------|-------|
 | Aplicación | MerchStock — Sistema Web de Administración de Inventario |
-| Versión | Proyecto Final · 2026 |
+| Versión | Proyecto Final · 2026 (v2.1 — boleta PDF y gráficos de dashboard) |
 | Empresa cliente | MerchStock Perú E.I.R.L. |
 | Tecnología | Java 17 · Spring Boot 3.5 · MySQL 8 · Thymeleaf · Bootstrap 5 |
 | Desarrollado por | Grupo 3 — Curso Integrador I Sistemas Software, UTP 2026 |

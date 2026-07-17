@@ -263,6 +263,20 @@ Aplicando la fórmula **Riesgo = Probabilidad × Impacto**:
 
 **Reporte completo:** ver sección "Pruebas de Seguridad" del documento `MerchStock_Fase_Final_Completa.docx`.
 
+### 🔒 8.6 Remediación Proactiva Adicional — Bloqueo de Cuenta por Fuerza Bruta
+
+El escaneo de OWASP ZAP se ejecutó **sin autenticación**, por lo que no evaluó la resistencia del endpoint `POST /login` frente a ataques de fuerza bruta (adivinación de contraseñas por intentos repetidos). Este vector de ataque no está cubierto por ninguno de los 6 hallazgos de la sección 8.2, pero fue identificado como riesgo razonable dado que el sistema expone un formulario de login público.
+
+Como medida preventiva, se implementó un mecanismo de bloqueo de cuenta:
+
+- **Política:** 5 intentos fallidos consecutivos → bloqueo de la cuenta por 15 minutos.
+- **Reseteo:** el contador de intentos fallidos se reinicia automáticamente al iniciar sesión con éxito.
+- **Persistencia del bloqueo:** el bloqueo se mantiene activo incluso si, dentro de la ventana de 15 minutos, se ingresa la contraseña correcta — evita que un atacante que eventualmente acierte la contraseña dentro de una ráfaga de intentos pueda acceder.
+- **Implementación:** `CustomUserDetailsService` verifica el estado de bloqueo (`bloqueadoHasta`); `LoginAttemptListener` escucha los eventos de autenticación (éxito, fallo, intento sobre cuenta bloqueada) e incrementa/resetea el contador; `SecurityConfig` distingue mediante un `AuthenticationFailureHandler` si el fallo se debe a credenciales incorrectas o a una cuenta bloqueada, mostrando el mensaje correspondiente al usuario.
+- **Verificación:** probado en vivo con el usuario `pventa1` — confirmado que al 5.º intento fallido la cuenta se bloquea, y que un 6.º intento con la contraseña correcta sigue siendo rechazado mientras el bloqueo esté vigente.
+
+Esta mejora no fue exigida por la rúbrica ni detectada por el escaneo de ZAP; se implementó de forma proactiva al identificar la brecha de cobertura entre un escaneo no autenticado y el riesgo real que representa un formulario de login expuesto públicamente.
+
 ---
 
 ## 🏁 9. Conclusiones
@@ -274,6 +288,7 @@ Aplicando la fórmula **Riesgo = Probabilidad × Impacto**:
 - ✅ El sistema mantiene la integridad del inventario y de las ventas.
 - ✅ El escaneo de seguridad con OWASP ZAP no encontró vulnerabilidades de riesgo Alto o Crítico, validando los controles ya implementados (BCrypt, RBAC, consultas parametrizadas).
 - ✅ Los hallazgos de seguridad identificados quedan documentados con un plan de remediación priorizado.
+- ✅ Se implementó de forma proactiva un mecanismo de bloqueo de cuenta tras 5 intentos fallidos (15 min), mitigando un vector de ataque (fuerza bruta) no cubierto por el escaneo automatizado al ser este sin autenticación.
 
 ---
 
